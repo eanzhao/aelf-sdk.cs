@@ -1,6 +1,9 @@
+using System.Text.Json;
 using AElf.Client.Consensus.AEDPoS;
 using AElf.Client.Core.Infrastructure;
 using AElf.Client.Parliament;
+using AElf.Runtime.WebAssembly;
+using AElf.SolidityContract;
 using AElf.Standards.ACS0;
 using AElf.Standards.ACS3;
 using AElf.Types;
@@ -8,6 +11,7 @@ using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Solang;
 using Volo.Abp.DependencyInjection;
 
 namespace AElf.Client.Genesis;
@@ -38,7 +42,7 @@ public class DeployContractService : IDeployContractService, ITransientDependenc
         Logger = NullLogger<DeployContractService>.Instance;
     }
 
-    public async Task<Tuple<Address?, string>> DeployContract(string contractFileName)
+    public async Task<Tuple<Address?, string>> DeployCSharpContract(string contractFileName)
     {
         Logger.LogInformation($"Deploy contract: {contractFileName}");
         var input = await ContractDeploymentInput(contractFileName);
@@ -91,6 +95,15 @@ public class DeployContractService : IDeployContractService, ITransientDependenc
             return new Tuple<Address?, string>(deployAddress, $"Contract deploy passed authority, contract address: {deployAddress}");;
         }
         return new Tuple<Address?, string>(null, "Contract code didn't pass the code check");
+    }
+
+    public async Task<Address> DeploySolidityContract(DeploySoliditySmartContractInput deploySoliditySmartContractInput)
+    {
+        var result = await _genesisService.DeploySoliditySmartContract(deploySoliditySmartContractInput);
+        var returnValue = result.TransactionResult.ReturnValue;
+        var contractAddress = new Address();
+        contractAddress.MergeFrom(returnValue);
+        return contractAddress;
     }
 
     private async Task<ContractDeploymentInput> ContractDeploymentInput(string name)

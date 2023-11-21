@@ -74,6 +74,12 @@
         <Protobuf Include="Protobuf\callback_input.proto" ProtoRoot="Protobuf">
             <Generator>MSBuild:Compile</Generator>
         </Protobuf>
+        <Protobuf Include="Protobuf\solidity_contract.proto" ProtoRoot="Protobuf">
+            <Generator>MSBuild:Compile</Generator>
+        </Protobuf>
+        <Protobuf Include="Protobuf\solidity_transaction_parameter.proto" ProtoRoot="Protobuf">
+            <Generator>MSBuild:Compile</Generator>
+        </Protobuf>
     </ItemGroup>
 
 </Project>

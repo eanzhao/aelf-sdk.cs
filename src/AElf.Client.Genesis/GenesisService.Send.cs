@@ -1,6 +1,7 @@
 using AElf.Client.Core;
 using AElf.Client.Core.Options;
 using AElf.Client.Genesis;
+using AElf.SolidityContract;
 using AElf.Standards.ACS0;
 using AElf.Types;
 using Microsoft.Extensions.Options;
@@ -16,7 +17,7 @@ public partial class GenesisService : ContractServiceBase, IGenesisService, ITra
 
     public GenesisService(IAElfClientService clientService,
         IOptionsSnapshot<AElfClientConfigOptions> clientConfigOptions,
-        IOptionsSnapshot<AElfContractOption> contractOptions) : base(clientService, 
+        IOptionsSnapshot<AElfContractOption> contractOptions) : base(clientService,
         Address.FromBase58(contractOptions.Value.GenesisContractAddress))
     {
         _clientService = clientService;
@@ -71,4 +72,17 @@ public partial class GenesisService : ContractServiceBase, IGenesisService, ITra
             TransactionResult = await PerformGetTransactionResultAsync(tx.GetHash().ToHex(), useClientAlias)
         };
     }
-} 
+
+    public async Task<SendTransactionResult> DeploySoliditySmartContract(
+        DeploySoliditySmartContractInput deploySoliditySmartContractInput)
+    {
+        var useClientAlias = _clientConfigOptions.ClientAlias;
+        var tx = await _clientService.SendAsync(_contractAddress, "DeploySoliditySmartContract",
+            deploySoliditySmartContractInput, useClientAlias);
+        return new SendTransactionResult
+        {
+            Transaction = tx,
+            TransactionResult = await PerformGetTransactionResultAsync(tx.GetHash().ToHex(), useClientAlias)
+        };
+    }
+}

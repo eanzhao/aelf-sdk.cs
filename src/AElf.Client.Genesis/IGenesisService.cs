@@ -1,4 +1,5 @@
 using AElf.Client.Core;
+using AElf.SolidityContract;
 using AElf.Standards.ACS0;
 using AElf.Types;
 
@@ -13,6 +14,7 @@ public interface IGenesisService
     Task<SendTransactionResult> ReleaseApprovedContract(ReleaseContractInput releaseContractInput);
 
     Task<SendTransactionResult> ReleaseCodeCheckedContract(ReleaseContractInput releaseContractInput);
+    Task<SendTransactionResult> DeploySoliditySmartContract(DeploySoliditySmartContractInput deploySoliditySmartContractInput);
 
 
     Task<AuthorityInfo> GetContractDeploymentController();

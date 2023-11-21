@@ -25,10 +25,21 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\modules\AElf.Runtime.WebAssembly.Types\AElf.Runtime.WebAssembly.Types.csproj" />
+        <ProjectReference Include="..\..\src\AElf.Client.Solidity\AElf.Client.Solidity.csproj" />
         <ProjectReference Include="..\..\src\AElf.Client\AElf.Client.csproj" />
         <ProjectReference Include="..\..\src\AElf.Client.Token\AElf.Client.Token.csproj" />
         <ProjectReference Include="..\..\src\AElf.Client.Genesis\AElf.Client.Genesis.csproj" />
         <ProjectReference Include="..\AElf.Client.TestBase\AElf.Client.TestBase.csproj" />
     </ItemGroup>
+
+
+    <ItemGroup>
+      <None Update="contracts\*.contract">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+
 
 </Project>

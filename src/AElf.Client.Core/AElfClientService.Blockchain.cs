@@ -48,4 +48,10 @@ public partial class AElfClientService
 
         return _objectMapper.Map<MerklePathDto, MerklePath>(merklePathDto);
     }
+
+    public async Task<long> EstimateGasFeeAsync(Transaction transaction)
+    {
+        var aelfClient = _aelfClientProvider.GetClient("Default");
+        throw new NotImplementedException();
+    }
 }

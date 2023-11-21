@@ -22,4 +22,6 @@ public interface IAElfClientService
     Task<ChainStatusDto> GetChainStatusAsync(string clientAlias);
 
     Task<MerklePath> GetMerklePathByTransactionIdAsync(string transactionId, string clientAlias);
+
+    Task<long> EstimateGasFeeAsync(Transaction transaction);
 }

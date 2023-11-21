@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PackageId>AElf.Client.Solidity</PackageId>
+        <PackageDescription>AElf solidity contract manager abp module.</PackageDescription>
+        <Company>AElf</Company>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\AElf.Client.Core\AElf.Client.Core.csproj" />
+        <ProjectReference Include="..\AElf.Client.Genesis\AElf.Client.Genesis.csproj" />
+    </ItemGroup>
+
+</Project>

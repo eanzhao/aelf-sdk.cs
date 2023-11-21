@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\modules\Solang.Net\Solang.Net.csproj" />
         <ProjectReference Include="..\AElf.Client.Consensus.AEDPoS\AElf.Client.Consensus.AEDPoS.csproj" />
         <ProjectReference Include="..\AElf.Client.Parliament\AElf.Client.Parliament.csproj" />
         <ProjectReference Include="..\AElf.Client.Token\AElf.Client.Token.csproj" />

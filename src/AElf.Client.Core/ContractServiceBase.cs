@@ -1,5 +1,6 @@
 using Google.Protobuf;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Volo.Abp.Threading;
 
 namespace AElf.Client.Core;
@@ -16,12 +17,16 @@ public class ContractServiceBase
     {
         _clientService = clientService;
         SmartContractName = smartContractName;
+        
+        Logger= NullLogger<ContractServiceBase>.Instance;
     }
 
     protected ContractServiceBase(IAElfClientService clientService, Address contractAddress)
     {
         _clientService = clientService;
         ContractAddress = contractAddress;
+
+        Logger= NullLogger<ContractServiceBase>.Instance;
     }
 
     protected async Task<Transaction> PerformSendTransactionAsync(string methodName, IMessage parameter,

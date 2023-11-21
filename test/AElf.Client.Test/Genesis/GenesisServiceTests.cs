@@ -25,7 +25,7 @@ public sealed class GenesisServiceTests : AElfClientAbpContractServiceTestBase
     [InlineData("AElf.Contracts.NFT")]
     public async Task DeployContract(string contractName)
     {
-        var tuple = await _deployService.DeployContract(contractName);
+        var tuple = await _deployService.DeployCSharpContract(contractName);
         _output.WriteLine(tuple.Item2);
         tuple.Item1.ShouldNotBeNull();
     }
