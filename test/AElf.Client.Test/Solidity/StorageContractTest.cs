@@ -17,7 +17,6 @@ public class StorageContractTest : AElfClientAbpContractServiceTestBase
 {
     private const string StorageContractPath = "contracts/Storage.contract";
 
-    private readonly IGenesisService _genesisService;
     private readonly IDeployContractService _deployService;
     private readonly IAElfClientService _aelfClientService;
     private readonly AElfClientConfigOptions _aelfClientConfigOptions;
@@ -26,7 +25,6 @@ public class StorageContractTest : AElfClientAbpContractServiceTestBase
 
     public StorageContractTest()
     {
-        _genesisService = GetRequiredService<IGenesisService>();
         _deployService = GetRequiredService<IDeployContractService>();
         _aelfClientService = GetRequiredService<IAElfClientService>();
         _aelfClientConfigOptions = GetRequiredService<IOptionsSnapshot<AElfClientConfigOptions>>().Value;

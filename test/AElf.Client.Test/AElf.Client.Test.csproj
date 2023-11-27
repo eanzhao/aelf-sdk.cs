@@ -4,8 +4,6 @@
         <TargetFramework>net6.0</TargetFramework>
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
-
-        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
@@ -33,13 +31,18 @@
         <ProjectReference Include="..\AElf.Client.TestBase\AElf.Client.TestBase.csproj" />
     </ItemGroup>
 
-
     <ItemGroup>
-      <None Update="contracts\*.contract">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+        <ProjectReference Include="..\AElf.Client.Test.SourceGenerator\AElf.Client.Test.SourceGenerator.csproj"
+                          OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
 
+    <PropertyGroup>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)\SolidityContractStubs</CompilerGeneratedFilesOutputPath>
+    </PropertyGroup>
 
+    <ItemGroup>
+        <AdditionalFiles Include="contracts\*.contract" />
+    </ItemGroup>
 
 </Project>

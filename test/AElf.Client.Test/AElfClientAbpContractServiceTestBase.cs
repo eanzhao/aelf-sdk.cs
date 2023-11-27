@@ -12,7 +12,6 @@ namespace AElf.Client.Test;
 public abstract class
     AElfClientAbpContractServiceTestBase : AElfClientAbpTestBase<AElfClientAbpContractServiceTestModule>
 {
-
     protected async Task<(WasmContractCode, SolangABI)> LoadWasmContractCodeAsync(string contractPath)
     {
         var abi = await File.ReadAllTextAsync(contractPath);
