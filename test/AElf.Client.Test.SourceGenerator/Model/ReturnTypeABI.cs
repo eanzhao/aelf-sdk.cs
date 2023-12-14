@@ -1,10 +1,7 @@
-using System.Collections.Generic;
+namespace Solang;
 
-namespace Solang
+public class ReturnTypeABI
 {
-    public class ReturnTypeABI
-    {
-        public List<string> DisplayName { get; set; }
-        public int Type { get; set; }
-    }
+    public List<string> DisplayName { get; set; }
+    public int Type { get; set; }
 }

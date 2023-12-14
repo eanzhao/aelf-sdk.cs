@@ -1,6 +1,4 @@
-using System.Linq;
-
-namespace Solang.Extensions;
+namespace Solang;
 
 public static class ABIExtensions
 {

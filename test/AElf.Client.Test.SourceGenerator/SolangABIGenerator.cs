@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using Solang;
-using Solang.Extensions;
 
 namespace AElf.Client.Test.SourceGenerator;
 
@@ -26,7 +25,6 @@ public class SolangAbiGenerator : ISourceGenerator
         var json = contractFile.GetText(context.CancellationToken)?.ToString();
         if (json == null) return;
 
-        var fileName = Path.GetFileName(contractFile.Path);
         var solangAbi = JsonSerializer.Deserialize<SolangABI>(json);
         var contractName = solangAbi.Contract.Name;
 
@@ -46,14 +44,18 @@ using Volo.Abp.DependencyInjection;
 
 namespace AElf.Client.Test;
 
+#nullable enable
+
 public interface I{contractName}Stub
 {{
     Task<Address> DeployAsync();
 ");
 
-        foreach (var message in solangAbi.Spec.Messages)
+        var interfaceList = new List<string>();
+        foreach (var message in solangAbi.Spec.Messages.Where(message => !interfaceList.Contains(message.Label)))
         {
             stringBuilder.Append(GenerateMethodInterface(message.Label));
+            interfaceList.Add(message.Label);
         }
 
         stringBuilder.Append($@"
@@ -105,24 +107,24 @@ public partial class {contractName}Stub : I{contractName}Stub, ITransientDepende
     }}
 ");
 
-        foreach (var message in solangAbi.Spec.Messages)
+        var methodList = new List<string>();
+        foreach (var message in solangAbi.Spec.Messages.Where(message => !methodList.Contains(message.Label)))
         {
             stringBuilder.Append(GenerateMethodImplementation(solangAbi, message.Label));
+            methodList.Add(message.Label);
         }
 
         stringBuilder.Append($@"
 }}
 ");
-        var options = ((CSharpCompilation)context.Compilation).SyntaxTrees[0].Options;
-        var sourceTree = CSharpSyntaxTree.ParseText(stringBuilder.ToString(), (CSharpParseOptions)options);
-        var compilation = context.Compilation.AddSyntaxTrees(sourceTree);
+
         context.AddSource($"{contractName}Stub.g.cs", SourceText.From(stringBuilder.ToString(), Encoding.UTF8));
     }
 
     private string GenerateMethodInterface(string label)
     {
         return $@"
-    Task<SendTransactionResult> {GetMethodName(label)}Async(ByteString parameter = null, Weight? gasLimit = null, long value = 0);
+    Task<SendTransactionResult> {GetMethodName(label)}Async(ByteString? parameter = null, Weight? gasLimit = null, long value = 0);
 ";
     }
 
@@ -131,7 +133,7 @@ public partial class {contractName}Stub : I{contractName}Stub, ITransientDepende
         var selector = solangAbi.GetSelector(label);
         return $@"
 
-    public async Task<SendTransactionResult> {GetMethodName(label)}Async(ByteString parameter = null, Weight? gasLimit = null, long value = 0)
+    public async Task<SendTransactionResult> {GetMethodName(label)}Async(ByteString? parameter = null, Weight? gasLimit = null, long value = 0)
     {{
         AssertContractDeployed();
         return await _solidityContractService.SendAsync(""{selector}"", parameter ?? ByteString.Empty, gasLimit, value);

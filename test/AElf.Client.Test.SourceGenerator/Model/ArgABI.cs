@@ -1,10 +1,7 @@
-using System.Collections.Generic;
+namespace Solang;
 
-namespace Solang
+public class ArgABI
 {
-    public class ArgABI
-    {
-        public string Label { get; set; }
-        public List<ReturnTypeABI> Type { get; set; }
-    }
+    public string Label { get; set; }
+    public List<ReturnTypeABI> Type { get; set; }
 }

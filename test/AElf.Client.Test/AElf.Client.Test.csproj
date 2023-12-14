@@ -42,7 +42,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="contracts\*.contract" />
+        <AdditionalFiles Include="contracts\*.contract" >
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </AdditionalFiles>
     </ItemGroup>
 
 </Project>

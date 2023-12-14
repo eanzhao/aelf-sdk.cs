@@ -3,7 +3,7 @@ using AElf.Runtime.WebAssembly.Types;
 using AElf.Types;
 using Shouldly;
 
-namespace AElf.Client.Test;
+namespace AElf.Client.Test.Solidity;
 
 public class StubTest : AElfClientAbpContractServiceTestBase
 {
