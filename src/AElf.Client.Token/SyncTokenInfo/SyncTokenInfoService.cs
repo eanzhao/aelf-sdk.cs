@@ -72,9 +72,7 @@ public class SyncTokenInfoService : ISyncTokenInfoService, ITransientDependency
             {
                 FromChainId = AElfClientConstants.MainChainId,
                 ParentChainHeight = validateResult.TransactionResult.BlockNumber,
-                TransactionBytes =
-                    ByteString.CopyFrom(
-                        ByteArrayHelper.HexStringToByteArray(validateResult.Transaction.ToByteArray().ToHex())),
+                TransactionBytes = validateResult.Transaction.ToByteString(),
                 MerklePath = merklePath
             };
 

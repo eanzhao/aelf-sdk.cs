@@ -42,7 +42,7 @@ public class TokenManagerHostedService : IHostedService
         Address.FromBase58("2HeW7S9HZrbRJZeivMppUuUY3djhWdfVnP5zrDsz8wqq6hKMfT"), "ELF", 100000_00000000,
         EndpointType.TestNetSideChain2.ToString());
         */
-        await tokenManagerService.GetTokenInfoAsync("ELF");
+        await tokenManagerService.SyncTokenInfoAsync("ELF");
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

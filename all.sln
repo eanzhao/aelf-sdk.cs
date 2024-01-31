@@ -68,6 +68,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AElf.Runtime.WebAssembly.Ty
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AElf.Client.Test.SourceGenerator", "test\AElf.Client.Test.SourceGenerator\AElf.Client.Test.SourceGenerator.csproj", "{1FCE3138-1D8D-422D-9492-EDEA053741E9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AElf.Client.Faucet", "src\AElf.Client.Faucet\AElf.Client.Faucet.csproj", "{D4FC3E29-D29E-440B-ADAF-31F1281E8D61}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,7 @@ Global
 		{6B5D867A-EEA5-4C40-B55D-F5D8C7F8FE9B} = {940361AC-2167-4D30-A4F6-9A543C608196}
 		{D272DCAA-CF63-49F2-BB63-D4B911E750B1} = {153CDCAD-8D17-457E-BC8D-8BD2766FE686}
 		{1FCE3138-1D8D-422D-9492-EDEA053741E9} = {7CD2B508-C765-4720-B430-94E79135797A}
+		{D4FC3E29-D29E-440B-ADAF-31F1281E8D61} = {940361AC-2167-4D30-A4F6-9A543C608196}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1AE7844D-B4D9-4F5A-9D25-7E551B61138E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -226,5 +229,9 @@ Global
 		{1FCE3138-1D8D-422D-9492-EDEA053741E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FCE3138-1D8D-422D-9492-EDEA053741E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FCE3138-1D8D-422D-9492-EDEA053741E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4FC3E29-D29E-440B-ADAF-31F1281E8D61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4FC3E29-D29E-440B-ADAF-31F1281E8D61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4FC3E29-D29E-440B-ADAF-31F1281E8D61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4FC3E29-D29E-440B-ADAF-31F1281E8D61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

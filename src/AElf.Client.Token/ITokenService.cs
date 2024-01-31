@@ -3,6 +3,7 @@ using AElf.Contracts.Bridge;
 using AElf.Contracts.MultiToken;
 using AElf.Contracts.NFT;
 using AElf.Types;
+using ApproveInput = AElf.Contracts.MultiToken.ApproveInput;
 using TransferInput = AElf.Contracts.MultiToken.TransferInput;
 
 namespace AElf.Client.Token;
@@ -22,6 +23,7 @@ public interface ITokenService
     Task<SendTransactionResult> CrossChainCreateNFTProtocolAsync(CrossChainCreateInput crossChainCreateInput);
 
     Task<SendTransactionResult> TransferAsync(TransferInput transferInput);
+    Task<SendTransactionResult> ApproveAsync(ApproveInput approveInput);
 
     Task<SendTransactionResult> AddMintersAsync(AddMintersInput addMintersInput);
     Task<SendTransactionResult> SwapTokenAsync(SwapTokenInput swapTokenInput);

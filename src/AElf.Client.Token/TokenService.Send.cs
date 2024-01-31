@@ -6,6 +6,7 @@ using AElf.Contracts.NFT;
 using AElf.Types;
 using Microsoft.Extensions.Options;
 using Volo.Abp.DependencyInjection;
+using ApproveInput = AElf.Contracts.MultiToken.ApproveInput;
 using CreateInput = AElf.Contracts.MultiToken.CreateInput;
 using TransferInput = AElf.Contracts.MultiToken.TransferInput;
 
@@ -126,6 +127,18 @@ public partial class TokenService : ContractServiceBase, ITokenService, ITransie
     {
         var clientAlias = _clientConfigOptions.ClientAlias;
         var tx = await PerformSendTransactionAsync("Transfer", transferInput,
+            clientAlias);
+        return new SendTransactionResult
+        {
+            Transaction = tx,
+            TransactionResult = await PerformGetTransactionResultAsync(tx.GetHash().ToHex(), clientAlias)
+        };
+    }
+
+    public async Task<SendTransactionResult> ApproveAsync(ApproveInput approveInput)
+    {
+        var clientAlias = _clientConfigOptions.ClientAlias;
+        var tx = await PerformSendTransactionAsync("Approve", approveInput,
             clientAlias);
         return new SendTransactionResult
         {
