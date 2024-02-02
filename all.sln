@@ -70,6 +70,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AElf.Client.Test.SourceGene
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AElf.Client.Faucet", "src\AElf.Client.Faucet\AElf.Client.Faucet.csproj", "{D4FC3E29-D29E-440B-ADAF-31F1281E8D61}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfitClaimer", "examples\ProfitClaimer\ProfitClaimer.csproj", "{95FD5DD5-435B-4B8B-8F9C-0321176B1BEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,7 @@ Global
 		{D272DCAA-CF63-49F2-BB63-D4B911E750B1} = {153CDCAD-8D17-457E-BC8D-8BD2766FE686}
 		{1FCE3138-1D8D-422D-9492-EDEA053741E9} = {7CD2B508-C765-4720-B430-94E79135797A}
 		{D4FC3E29-D29E-440B-ADAF-31F1281E8D61} = {940361AC-2167-4D30-A4F6-9A543C608196}
+		{95FD5DD5-435B-4B8B-8F9C-0321176B1BEB} = {5D1BDC45-D6F1-4359-868B-CB85CEC4ABD8}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1AE7844D-B4D9-4F5A-9D25-7E551B61138E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -233,5 +236,9 @@ Global
 		{D4FC3E29-D29E-440B-ADAF-31F1281E8D61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4FC3E29-D29E-440B-ADAF-31F1281E8D61}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4FC3E29-D29E-440B-ADAF-31F1281E8D61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95FD5DD5-435B-4B8B-8F9C-0321176B1BEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95FD5DD5-435B-4B8B-8F9C-0321176B1BEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95FD5DD5-435B-4B8B-8F9C-0321176B1BEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95FD5DD5-435B-4B8B-8F9C-0321176B1BEB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

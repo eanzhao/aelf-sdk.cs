@@ -23,7 +23,7 @@ public class CrossChainService : ContractServiceBase, ICrossChainService, ITrans
     public async Task<long> GetSyncedHeightByChainId(int chainId)
     {
         var useClientAlias = _clientConfigOptions.ClientAlias;
-        var result = chainId == AElfClientConstants.MainchainId
+        var result = chainId == AElfClientConstants.AELFChainId
             ? await _clientService.ViewSystemAsync(AElfCrossChainConstants.CrossChainSmartContractName,
                 "GetParentChainHeight",
                 new Empty(), useClientAlias)

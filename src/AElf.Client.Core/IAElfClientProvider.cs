@@ -20,15 +20,15 @@ public class AElfClientProvider : Dictionary<AElfClientInfo, AElfClient>, IAElfC
         var useCamelCase = aelfClientConfigOptions.Value.CamelCase;
         var clientBuilder = new AElfClientBuilder();
         SetClient(clientBuilder.UsePublicEndpoint(EndpointType.MainNetMainchain).Build(),
-            "MainNet", AElfClientConstants.MainchainId, "MainChain", EndpointType.MainNetMainchain.ToString());
+            "MainNet", AElfClientConstants.AELFChainId, "MainChain", EndpointType.MainNetMainchain.ToString());
         SetClient(clientBuilder.UsePublicEndpoint(EndpointType.MainNetSidechain).Build(),
-            "MainNet", AElfClientConstants.SidechainId, "SideChain", EndpointType.MainNetSidechain.ToString());
+            "MainNet", AElfClientConstants.tDVVChainId, "SideChain", EndpointType.MainNetSidechain.ToString());
         SetClient(clientBuilder.UsePublicEndpoint(EndpointType.TestNetMainchain).Build(),
-            "TestNet", AElfClientConstants.MainchainId, "MainChain", EndpointType.TestNetMainchain.ToString());
+            "TestNet", AElfClientConstants.AELFChainId, "MainChain", EndpointType.TestNetMainchain.ToString());
         SetClient(clientBuilder.UsePublicEndpoint(EndpointType.TestNetSidechain2).Build(),
-            "MainNet", AElfClientConstants.SidechainId2, "SideChain", EndpointType.TestNetSidechain2.ToString());
+            "MainNet", AElfClientConstants.tDVWChainId, "SideChain", EndpointType.TestNetSidechain2.ToString());
         SetClient(clientBuilder.UsePublicEndpoint(EndpointType.Local).Build(), "Local",
-            AElfClientConstants.MainchainId, "MainChain", EndpointType.Local.ToString());
+            AElfClientConstants.AELFChainId, "MainChain", EndpointType.Local.ToString());
 
         foreach (var clientConfig in aelfClientOptions.Value.ClientConfigList)
         {
@@ -45,7 +45,7 @@ public class AElfClientProvider : Dictionary<AElfClientInfo, AElfClient>, IAElfC
         string? chainType = null)
     {
         var keys = Keys
-            .WhereIf(!alias.IsNullOrWhiteSpace(), c => c.Alias == alias)
+            .WhereIf(!alias.IsNullOrWhiteSpace(), c => string.Equals(c.Alias, alias, StringComparison.CurrentCultureIgnoreCase))
             .WhereIf(!environment.IsNullOrWhiteSpace(), c => c.Environment == environment)
             .WhereIf(chainId.HasValue, c => c.ChainId == chainId)
             .WhereIf(!chainType.IsNullOrWhiteSpace(), c => c.ChainType == chainType)

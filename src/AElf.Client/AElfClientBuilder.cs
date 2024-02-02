@@ -26,16 +26,16 @@ namespace AElf.Client
             switch (endpointType)
             {
                 case EndpointType.MainNetMainchain:
-                    NodeEndpoint = AElfClientConstants.MainNetMainChain;
+                    NodeEndpoint = AElfClientConstants.MainNetMainchain;
                     break;
                 case EndpointType.MainNetSidechain:
                     NodeEndpoint = AElfClientConstants.MainNetSidechain;
                     break;
                 case EndpointType.TestNetMainchain:
-                    NodeEndpoint = AElfClientConstants.TestNetMainChain;
+                    NodeEndpoint = AElfClientConstants.TestNetMainchain;
                     break;
                 case EndpointType.TestNetSidechain:
-                    NodeEndpoint = AElfClientConstants.TestNetSidechain;
+                    NodeEndpoint = AElfClientConstants.TestNetSideChain2;
                     break;
                 case EndpointType.Local:
                 default:

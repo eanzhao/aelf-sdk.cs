@@ -53,7 +53,7 @@ public class SyncTokenInfoService : ISyncTokenInfoService, ITransientDependency
             while (true)
             {
                 var syncedMainChainHeight =
-                    await _crossChainService.GetSyncedHeightByChainId(AElfClientConstants.MainchainId);
+                    await _crossChainService.GetSyncedHeightByChainId(AElfClientConstants.AELFChainId);
                 Logger.LogInformation(
                     "Synced main chain height: {MainChainHeight}, Validate tx package height: {ValidateHeight}",
                     syncedMainChainHeight, validateResult.TransactionResult.BlockNumber);
@@ -70,7 +70,7 @@ public class SyncTokenInfoService : ISyncTokenInfoService, ITransientDependency
                 _clientConfigOptions.MainChainClientAlias);
             var crossChainCreateTokenInput = new CrossChainCreateTokenInput
             {
-                FromChainId = AElfClientConstants.MainchainId,
+                FromChainId = AElfClientConstants.AELFChainId,
                 ParentChainHeight = validateResult.TransactionResult.BlockNumber,
                 TransactionBytes = validateResult.Transaction.ToByteString(),
                 MerklePath = merklePath

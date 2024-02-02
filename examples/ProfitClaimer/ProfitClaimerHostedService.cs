@@ -1,21 +1,22 @@
-using AElf.Client;
+using AElf.Client.Profit;
+using AElf.Contracts.Profit;
+using AElf.Types;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using TokenManager;
 using Volo.Abp;
 
-namespace CrossChainManager;
+namespace ProfitClaimer;
 
-public class CrossChainManagerHostedService : IHostedService
+public class ProfitClaimerHostedService : IHostedService
 {
     private IAbpApplicationWithInternalServiceProvider _abpApplication;
 
     private readonly IConfiguration _configuration;
     private readonly IHostEnvironment _hostEnvironment;
 
-    public CrossChainManagerHostedService(IConfiguration configuration, IHostEnvironment hostEnvironment)
+    public ProfitClaimerHostedService(IConfiguration configuration, IHostEnvironment hostEnvironment)
     {
         _configuration = configuration;
         _hostEnvironment = hostEnvironment;
@@ -23,7 +24,7 @@ public class CrossChainManagerHostedService : IHostedService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        _abpApplication = await AbpApplicationFactory.CreateAsync<CrossChainManagerModule>(options =>
+        _abpApplication = await AbpApplicationFactory.CreateAsync<ProfitClaimerModule>(options =>
         {
             options.Services.ReplaceConfiguration(_configuration);
             options.Services.AddSingleton(_hostEnvironment);
@@ -34,8 +35,12 @@ public class CrossChainManagerHostedService : IHostedService
 
         await _abpApplication.InitializeAsync();
 
-        var crossChainManagerService = _abpApplication.ServiceProvider.GetRequiredService<CrossChainManagerService>();
-        await crossChainManagerService.GetSyncedHeightByChainId(AElfClientConstants.AELFChainId);
+        var profitService = _abpApplication.ServiceProvider.GetRequiredService<IProfitService>();
+        await profitService.ClaimProfitsAsync(new ClaimProfitsInput
+        {
+            SchemeId = ProfitClaimerConstants.CitizenWelfareSchemeId,
+            Beneficiary = Address.FromBase58("")
+        });
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
