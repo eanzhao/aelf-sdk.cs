@@ -28,4 +28,10 @@
         </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="voters.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

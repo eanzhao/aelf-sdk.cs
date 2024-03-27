@@ -34,7 +34,7 @@ namespace AElf.Client
                 case EndpointType.TestNetMainchain:
                     NodeEndpoint = AElfClientConstants.TestNetMainchain;
                     break;
-                case EndpointType.TestNetSidechain:
+                case EndpointType.TestNetSidechain2:
                     NodeEndpoint = AElfClientConstants.TestNetSideChain2;
                     break;
                 case EndpointType.Local:

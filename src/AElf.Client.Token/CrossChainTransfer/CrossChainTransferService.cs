@@ -62,9 +62,7 @@ public class CrossChainTransferService : ICrossChainTransferService, ITransientD
                 FromChainId = ChainHelper.ConvertBase58ToChainId(fromChainStatus.ChainId),
                 MerklePath = merklePath,
                 ParentChainHeight = transferResult.TransactionResult.BlockNumber,
-                TransferTransactionBytes =
-                    ByteString.CopyFrom(
-                        ByteArrayHelper.HexStringToByteArray(transferResult.Transaction.ToByteArray().ToHex())),
+                TransferTransactionBytes = transferResult.Transaction.ToByteString()
             };
 
             var crossChainReceiveTokenResult =

@@ -71,7 +71,7 @@ public sealed class TokenServiceTests : AElfClientAbpContractServiceTestBase
             Symbol = symbol
         });
     }
-
+    
     [Theory]
     [InlineData("BA417054001", "JQkVTWz5HXxEmNXzTtsAVHC7EUTeiFktzoFUu9TyA6MWngkem")]
     public async Task AddMintersTest(string symbol, string addressBase58)

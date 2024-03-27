@@ -26,7 +26,7 @@ namespace AElf.Client.Test;
 
 public class ClientTest
 {
-    private const string BaseUrl = "http://127.0.0.1:8000";
+    private const string BaseUrl = "https://tdvw-test-node.aelf.io";
 
     private string _genesisAddress;
     private string GenesisAddress => GetGenesisContractAddress();
@@ -397,7 +397,9 @@ public class ClientTest
     {
         var firstBlockDto = await Client.GetBlockByHeightAsync(1, true);
         var transactionId = firstBlockDto.Body.Transactions.FirstOrDefault();
-        var merklePathDto = await Client.GetMerklePathByTransactionIdAsync(transactionId);
+        var merklePathDto = Client
+            .GetMerklePathByTransactionIdAsync("4abed78e9589d9edfe59b997f67a0871b1f5ae6aedef971ce4f100794d1b1c07")
+            .Result;
         Assert.True(merklePathDto != null);
 
         var merklePath = JsonConvert.SerializeObject(merklePathDto, Formatting.Indented);

@@ -8,5 +8,7 @@ public interface IProfitService
 {
     Task<SendTransactionResult> ClaimProfitsAsync(ClaimProfitsInput claimProfitsInput);
 
-    Task<Scheme> GetScheme(Hash schemeId);
+    Task<Scheme> GetSchemeAsync(Hash schemeId);
+    Task<long> GetProfitAmountAsync(GetProfitAmountInput getProfitAmountInput);
+    Task<ProfitDetails> GetProfitDetailsAsync(GetProfitDetailsInput getProfitDetailsInput);
 }

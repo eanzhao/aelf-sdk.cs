@@ -26,7 +26,7 @@ public class AElfClientProvider : Dictionary<AElfClientInfo, AElfClient>, IAElfC
         SetClient(clientBuilder.UsePublicEndpoint(EndpointType.TestNetMainchain).Build(),
             "TestNet", AElfClientConstants.AELFChainId, "MainChain", EndpointType.TestNetMainchain.ToString());
         SetClient(clientBuilder.UsePublicEndpoint(EndpointType.TestNetSidechain2).Build(),
-            "MainNet", AElfClientConstants.tDVWChainId, "SideChain", EndpointType.TestNetSidechain2.ToString());
+            "TestNet", AElfClientConstants.tDVWChainId, "SideChain", EndpointType.TestNetSidechain2.ToString());
         SetClient(clientBuilder.UsePublicEndpoint(EndpointType.Local).Build(), "Local",
             AElfClientConstants.AELFChainId, "MainChain", EndpointType.Local.ToString());
 
