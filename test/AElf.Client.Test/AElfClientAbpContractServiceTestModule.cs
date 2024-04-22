@@ -1,3 +1,4 @@
+using AElf.Client.Election;
 using AElf.Client.Faucet;
 using AElf.Client.Genesis;
 using AElf.Client.Solidity;
@@ -12,7 +13,8 @@ namespace AElf.Client.Test;
     typeof(AElfClientTokenModule),
     typeof(AElfClientGenesisModule),
     typeof(AElfClientSolidityModule),
-    typeof(AElfClientFaucetModule)
+    typeof(AElfClientFaucetModule),
+    typeof(AElfClientElectionModule)
 )]
 public class AElfClientAbpContractServiceTestModule : AbpModule
 {

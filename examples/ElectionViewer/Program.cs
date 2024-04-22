@@ -81,7 +81,7 @@ var combined = pair.GroupBy(s => s.Voter)
         Shares = g.Sum(s => s.Shares)
     }).ToList();
 Console.WriteLine($"grouped count: {combined.Count}");
-foreach (var share in combined)
+foreach (var share in combined.OrderByDescending(p => p.Shares))
 {
     Console.WriteLine($"{share.Voter},{share.Shares}");
 }

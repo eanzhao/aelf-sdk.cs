@@ -38,22 +38,24 @@ public class ProfitClaimerHostedService : IHostedService
         var profitService = _abpApplication.ServiceProvider.GetRequiredService<IProfitService>();
 
         var schemeId = Hash.LoadFromHex("d638bb79ebeaa0e9fd6c562c9734947d467b2753d8108733ce1d9139e5b1e721");
-        foreach (var voter in await File.ReadAllLinesAsync("voters.txt", cancellationToken))
-        {
-            var address = Address.FromBase58(voter);
-            var details = await profitService.GetProfitDetailsAsync(new GetProfitDetailsInput
-            {
-                SchemeId = schemeId,
-                Beneficiary = address
-            });
-            Console.WriteLine($"{voter}:\n{details}");
-        }
+        // foreach (var voter in await File.ReadAllLinesAsync("voters.txt", cancellationToken))
+        // {
+        //     var address = Address.FromBase58(voter);
+        //     var details = await profitService.GetProfitDetailsAsync(new GetProfitDetailsInput
+        //     {
+        //         SchemeId = schemeId,
+        //         Beneficiary = address
+        //     });
+        //     Console.WriteLine($"{voter}:\n{details}");
+        // }
 
         var scheme =
             await profitService.GetSchemeAsync(schemeId);
         Console.WriteLine($"Scheme: {scheme}");
         Console.WriteLine($"Total shares: {scheme.TotalShares}");
         // 12287556623449740
+        // 12231325157420058
+        // 12152144293669496
 
         // var votersNeedToClaim = new Dictionary<string, long>();
         // foreach (var voter in await File.ReadAllLinesAsync("voters.txt", cancellationToken))

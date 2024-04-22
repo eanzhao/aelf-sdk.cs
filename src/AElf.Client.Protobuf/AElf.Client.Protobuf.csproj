@@ -37,6 +37,9 @@
         <Protobuf Include="Protobuf\acs3.proto" ProtoRoot="Protobuf">
             <Generator>MSBuild:Compile</Generator>
         </Protobuf>
+        <Protobuf Include="Protobuf\acs12.proto" ProtoRoot="Protobuf">
+            <Generator>MSBuild:Compile</Generator>
+        </Protobuf>
         <Protobuf Include="Protobuf\acs13.proto" ProtoRoot="Protobuf">
             <Generator>MSBuild:Compile</Generator>
         </Protobuf>
@@ -83,6 +86,12 @@
             <Generator>MSBuild:Compile</Generator>
         </Protobuf>
         <Protobuf Include="Protobuf\profit_contract.proto" ProtoRoot="Protobuf">
+            <Generator>MSBuild:Compile</Generator>
+        </Protobuf>
+        <Protobuf Include="Protobuf\election_contract.proto" ProtoRoot="Protobuf">
+            <Generator>MSBuild:Compile</Generator>
+        </Protobuf>
+        <Protobuf Include="Protobuf\symbol_registrar_contract.proto" ProtoRoot="Protobuf">
             <Generator>MSBuild:Compile</Generator>
         </Protobuf>
     </ItemGroup>

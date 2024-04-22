@@ -28,6 +28,13 @@ public class ContractServiceBase
 
         Logger= NullLogger<ContractServiceBase>.Instance;
     }
+    
+    protected ContractServiceBase(IAElfClientService clientService)
+    {
+        _clientService = clientService;
+
+        Logger= NullLogger<ContractServiceBase>.Instance;
+    }
 
     protected async Task<Transaction> PerformSendTransactionAsync(string methodName, IMessage parameter,
         string useClientAlias, string? smartContractName = null)

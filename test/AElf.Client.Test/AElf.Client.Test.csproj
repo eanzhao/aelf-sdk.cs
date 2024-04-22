@@ -24,6 +24,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\modules\AElf.Runtime.WebAssembly.Types\AElf.Runtime.WebAssembly.Types.csproj" />
+        <ProjectReference Include="..\..\src\AElf.Client.Election\AElf.Client.Election.csproj" />
         <ProjectReference Include="..\..\src\AElf.Client.Faucet\AElf.Client.Faucet.csproj" />
         <ProjectReference Include="..\..\src\AElf.Client.Solidity\AElf.Client.Solidity.csproj" />
         <ProjectReference Include="..\..\src\AElf.Client\AElf.Client.csproj" />
