@@ -39,6 +39,12 @@ public class TokenManagerService : ITransientDependency
         Logger.LogInformation("{TokenInfo}", tokenInfo.ToString());
     }
 
+    public async Task CreateTokenAsync(CreateInput createInput)
+    {
+        var result = await _tokenService.CreateTokenAsync(createInput);
+        Logger.LogInformation($"Create token result: {result.TransactionResult}");
+    }
+
     public async Task SyncTokenInfoAsync(string symbol)
     {
         _syncTokenInfoQueueService.Enqueue(symbol);

@@ -30,6 +30,8 @@ public class CrossChainTransferService : ICrossChainTransferService, ITransientD
         var fromChainStatus = await _clientService.GetChainStatusAsync(fromClientAlias);
         var toChainStatus = await _clientService.GetChainStatusAsync(toClientAlias);
         var tokenInfo = await _tokenService.GetTokenInfoAsync(symbol);
+        
+        // First tx
         var crossChainTransferInput = new CrossChainTransferInput
         {
             To = to,
@@ -44,6 +46,7 @@ public class CrossChainTransferService : ICrossChainTransferService, ITransientD
         {
             while (true)
             {
+                // Wait until the cross-chain indexing is done.
                 var chainStatus =
                     await _clientService.GetChainStatusAsync(fromClientAlias);
                 Logger.LogInformation(
@@ -54,6 +57,7 @@ public class CrossChainTransferService : ICrossChainTransferService, ITransientD
                 await Task.Delay(AElfTokenConstants.TenSeconds);
             }
 
+            // Query merkle path to prepare the data validation for cross-chain receive.
             var merklePath = await _clientService.GetMerklePathByTransactionIdAsync(
                 transferResult.TransactionResult.TransactionId.ToHex(),
                 fromClientAlias);
@@ -65,6 +69,7 @@ public class CrossChainTransferService : ICrossChainTransferService, ITransientD
                 TransferTransactionBytes = transferResult.Transaction.ToByteString()
             };
 
+            // Second tx
             var crossChainReceiveTokenResult =
                 await _tokenService.CrossChainReceiveTokenAsync(crossChainReceiveTokenInput, toClientAlias);
             Logger.LogInformation("CrossChainReceiveToken: {Result}", crossChainReceiveTokenResult.TransactionResult);

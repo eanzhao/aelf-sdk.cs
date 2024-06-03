@@ -7,6 +7,7 @@
         <PackageDescription>Protobuf using by AElf C# sdk.</PackageDescription>
         <Company>AElf</Company>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -35,6 +36,9 @@
             <Generator>MSBuild:Compile</Generator>
         </Protobuf>
         <Protobuf Include="Protobuf\acs3.proto" ProtoRoot="Protobuf">
+            <Generator>MSBuild:Compile</Generator>
+        </Protobuf>
+        <Protobuf Include="Protobuf\acs4.proto" ProtoRoot="Protobuf">
             <Generator>MSBuild:Compile</Generator>
         </Protobuf>
         <Protobuf Include="Protobuf\acs12.proto" ProtoRoot="Protobuf">

@@ -30,9 +30,11 @@ public partial class AElfClientService : IAElfClientService, ITransientDependenc
     }
 
     public async Task<byte[]> ViewAsync(string contractAddress, string methodName, IMessage parameter,
-        string clientAlias, string accountAlias = "Default")
+        string clientAliasOrEndpoint, string accountAlias = "Default")
     {
-        var aelfClient = _aelfClientProvider.GetClient(alias: clientAlias);
+        var aelfClient = clientAliasOrEndpoint.StartsWith("http")
+            ? new AElfClient(clientAliasOrEndpoint)
+            : _aelfClientProvider.GetClient(alias: clientAliasOrEndpoint);
         var aelfAccount = _aelfAccountProvider.GetPrivateKey(alias: accountAlias);
         var tx = new TransactionBuilder(aelfClient)
             .UsePrivateKey(aelfAccount)
@@ -44,9 +46,12 @@ public partial class AElfClientService : IAElfClientService, ITransientDependenc
     }
 
     public async Task<byte[]> ViewSystemAsync(string systemContractName, string methodName, IMessage parameter,
-        string clientAlias, string accountAlias = "Default")
+        string clientAliasOrEndpoint, string accountAlias = "Default")
     {
-        var aelfClient = _aelfClientProvider.GetClient(alias: clientAlias);
+        var aelfClient = clientAliasOrEndpoint.StartsWith("http")
+            ? new AElfClient(clientAliasOrEndpoint)
+            : _aelfClientProvider.GetClient(alias: clientAliasOrEndpoint);
+
         var privateKey = _aelfAccountProvider.GetPrivateKey(alias: accountAlias);
         var tx = new TransactionBuilder(aelfClient)
             .UsePrivateKey(privateKey)

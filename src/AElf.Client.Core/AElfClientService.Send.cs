@@ -7,9 +7,11 @@ namespace AElf.Client.Core;
 public partial class AElfClientService
 {
     public async Task<Transaction> SendAsync(string contractAddress, string methodName, IMessage parameter,
-        string clientAlias, string? alias = null, string? address = null)
+        string clientAliasOrEndpoint, string? alias = null, string? address = null)
     {
-        var aelfClient = _aelfClientProvider.GetClient(alias: clientAlias);
+        var aelfClient = clientAliasOrEndpoint.StartsWith("http")
+            ? new AElfClient(clientAliasOrEndpoint)
+            : _aelfClientProvider.GetClient(alias: clientAliasOrEndpoint);
         var aelfAccount = SetAccount(alias, address);
         var tx = new TransactionBuilder(aelfClient)
             .UsePrivateKey(aelfAccount)
@@ -22,9 +24,11 @@ public partial class AElfClientService
     }
 
     public async Task<Transaction> SendSystemAsync(string systemContractName, string methodName, IMessage parameter,
-        string clientAlias, string? alias = null, string? address = null)
+        string clientAliasOrEndpoint, string? alias = null, string? address = null)
     {
-        var aelfClient = _aelfClientProvider.GetClient(alias: clientAlias);
+        var aelfClient = clientAliasOrEndpoint.StartsWith("http")
+            ? new AElfClient(clientAliasOrEndpoint)
+            : _aelfClientProvider.GetClient(alias: clientAliasOrEndpoint);
         var aelfAccount = SetAccount(alias, address);
         var tx = new TransactionBuilder(aelfClient)
             .UsePrivateKey(aelfAccount)

@@ -38,27 +38,37 @@ public class SeedCreatorHostedService : IHostedService
 
         var symbolRegistrarService = _abpApplication.ServiceProvider.GetRequiredService<ISymbolRegistrarService>();
         var clientService = _abpApplication.ServiceProvider.GetRequiredService<IAElfClientService>();
-        for (var i = 0; i < 10; i++)
+        const int count = 91;
+        for (var i = 0; i < count; i++)
         {
             var symbol = GenerateRandomString(10);
+            Console.WriteLine($"Symbol: {symbol}");
             var sendTxResult = await symbolRegistrarService.CreateSeedAsync(new CreateSeedInput
             {
                 Symbol = symbol,
                 To = Address.FromBase58("GxyKXSsTWLimZ14Cm1NkX2v62AiCkUCsEZa7H91x8EguypVSp")
             });
             var txId = sendTxResult.Transaction.GetHash();
-            var txResult = await clientService.GetTransactionResultAsync(txId.ToHex(), "TestNetMainChain");
+            var txResult = await clientService.GetTransactionResultAsync(txId.ToHex(), "Example");
+            Console.WriteLine(i + 1);
             Console.WriteLine($"TxResult: {txResult}");
-            Console.WriteLine(i);
         }
     }
 
-    private string GenerateRandomString(int length)
+    private string GenerateRandomString(int length, bool isNftCollection = false)
     {
+        //const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         var random = new Random();
-        return new string(Enumerable.Repeat(chars, length)
+        var symbol = new string(Enumerable.Repeat(chars, length)
             .Select(s => s[random.Next(s.Length)]).ToArray());
+        if (isNftCollection)
+        {
+            symbol += "-0";
+        }
+
+        return symbol;
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

@@ -7,6 +7,7 @@ namespace AElf.Client.Parliament;
 
 public interface IParliamentService
 {
+    Task<SendTransactionResult> CreateProposalAsync(CreateProposalInput createProposalInput);
     Task<SendTransactionResult> ApproveAsync(Hash proposalId, string? accountAlias, string accountAddress);
 
     Task<ProposalOutput> CheckProposal(Hash proposalId);

@@ -19,15 +19,27 @@ public partial class ParliamentService : ContractServiceBase, IParliamentService
         _clientConfigOptions = clientConfigOptions.Value;
     }
 
-    public async Task<SendTransactionResult> ApproveAsync(Hash proposalId, string? accountAlias, string address)
+    public async Task<SendTransactionResult> CreateProposalAsync(CreateProposalInput createProposalInput)
     {
-        var useClientAlias = _clientConfigOptions.ClientAlias;
+        var clientAlias = _clientConfigOptions.ClientAlias;
         var tx = await _clientService.SendSystemAsync(AElfParliamentConstants.ParliamentSmartContractName, "Approve",
-            proposalId, useClientAlias, accountAlias, address);
+            createProposalInput, clientAlias);
         return new SendTransactionResult
         {
             Transaction = tx,
-            TransactionResult = await PerformGetTransactionResultAsync(tx.GetHash().ToHex(), useClientAlias)
+            TransactionResult = await PerformGetTransactionResultAsync(tx.GetHash().ToHex(), clientAlias)
+        };
+    }
+
+    public async Task<SendTransactionResult> ApproveAsync(Hash proposalId, string? accountAlias, string address)
+    {
+        var clientAlias = _clientConfigOptions.ClientAlias;
+        var tx = await _clientService.SendSystemAsync(AElfParliamentConstants.ParliamentSmartContractName, "Approve",
+            proposalId, clientAlias, accountAlias, address);
+        return new SendTransactionResult
+        {
+            Transaction = tx,
+            TransactionResult = await PerformGetTransactionResultAsync(tx.GetHash().ToHex(), clientAlias)
         };
     }
 }

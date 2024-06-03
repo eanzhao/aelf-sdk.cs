@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using AElf.Client.Token;
 using AElf.Client.Token.SyncTokenInfo;
 using AElf.Contracts.Bridge;
+using AElf.Contracts.MultiToken;
 using AElf.Contracts.NFT;
+using AElf.Contracts.Profit;
 using AElf.Types;
 using Google.Protobuf;
 using Shouldly;
@@ -98,5 +100,23 @@ public sealed class TokenServiceTests : AElfClientAbpContractServiceTestBase
             OriginAmount = amount,
             ReceiptId = receiptId
         });
+    }
+
+    [Fact]
+    public void Test()
+    {
+        var pubkey =
+            "04f785788757c15158d39c3fd989336f334b8439592b1e14a7c17dad8bc9fe53b4bff9d39e4cc38ddc0c1f13b154ed435e560e219a375aed42b57c1705e2f04f45";
+        var address = Address.FromPublicKey(ByteArrayHelper.HexStringToByteArray(pubkey));
+        address.ToBase58().ShouldBeNull();
+    }
+
+    [Fact]
+    public void Test2()
+    {
+        var parameterBase64 =
+            "CiIKIKpXDFiH8pHPrjiTGEbLSXCs9IVsFGEdgeKeP0KUmDogEiIKIJmyGXgy97JtGOqcDXPbvSvNPxKB2q3qs54sdjf7dfgpGiIKIDAm1SW5NFgZyLu8aihL3boLmnrgIMQoX0c+5qUseBgg";
+        var parameter = RemoveBeneficiaryInput.Parser.ParseFrom(ByteString.FromBase64(parameterBase64));
+        
     }
 }

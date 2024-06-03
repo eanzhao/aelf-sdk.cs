@@ -34,13 +34,29 @@ public class TokenManagerHostedService : IHostedService
 
         await _abpApplication.InitializeAsync();
 
-         var tokenManagerService = _abpApplication.ServiceProvider.GetRequiredService<TokenManagerService>();
-        // await tokenManagerService.TransferAsync(Address.FromBase58("eyDPrhJdofZ9f7Qdyi8FtbA8BePubP1M3gwfVMs6MnMHHNwik"),
-        //     "ELF", 10000_00000000);
+        var tokenManagerService = _abpApplication.ServiceProvider.GetRequiredService<TokenManagerService>();
+        await PerformTransferAsync(tokenManagerService, "GxyKXSsTWLimZ14Cm1NkX2v62AiCkUCsEZa7H91x8EguypVSp", "ELF",
+            20000_00000000);
+    }
+
+    private async Task PerformCrossChainTransferAsync(TokenManagerService tokenManagerService, string toAddress,
+        string symbol, long amount)
+    {
         await tokenManagerService.CrossChainTransferAsync(
-            Address.FromBase58("2HeW7S9HZrbRJZeivMppUuUY3djhWdfVnP5zrDsz8wqq6hKMfT"), "ELF", 10_00000000,
+            Address.FromBase58(toAddress), symbol, amount,
             EndpointType.TestNetSidechain2.ToString());
-        //await tokenManagerService.SyncTokenInfoAsync("ELF");
+    }
+
+    private async Task PerformTransferAsync(TokenManagerService tokenManagerService, string toAddress, string symbol,
+        long amount)
+    {
+        await tokenManagerService.TransferAsync(Address.FromBase58(toAddress),
+            symbol, amount);
+    }
+
+    private async Task PerformCrossChainCreateAsync(TokenManagerService tokenManagerService, string symbol)
+    {
+        await tokenManagerService.SyncTokenInfoAsync(symbol);
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

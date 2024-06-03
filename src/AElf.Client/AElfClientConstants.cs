@@ -6,7 +6,7 @@ public class AElfClientConstants
     public const string LocalEndpoint = "http://127.0.0.1:8000";
     public const string MainNetMainchain = "https://aelf-public-node.aelf.io";
     public const string MainNetSidechain = "https://tdvv-public-node.aelf.io";
-    public const string TestNetMainchain = "https://aelf-test-node.aelf.io";
+    public const string TestNetMainchain = "http://54.199.254.157:8000";
     public const string TestNetSidechain = "https://tdvv-test-node.aelf.io";// Died.
     public const string TestNetSideChain2 = "https://tdvw-test-node.aelf.io";
     public const int AELFChainId = 9992731;
