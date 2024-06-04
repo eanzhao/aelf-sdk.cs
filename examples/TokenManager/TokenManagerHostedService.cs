@@ -25,7 +25,11 @@ public class TokenManagerHostedService : IHostedService
     {
         _abpApplication = await AbpApplicationFactory.CreateAsync<TokenManagerModule>(options =>
         {
-            options.Services.ReplaceConfiguration(_configuration);
+            var builder = new ConfigurationBuilder()
+                .AddConfiguration(_configuration)
+                .AddJsonFile($"appsettings.json")
+                .AddJsonFile($"appsettings.local.json", true);
+            options.Services.ReplaceConfiguration(builder.Build());
             options.Services.AddSingleton(_hostEnvironment);
 
             options.UseAutofac();

@@ -27,7 +27,11 @@ public class SeedCreatorHostedService : IHostedService
     {
         _abpApplication = await AbpApplicationFactory.CreateAsync<SeedCreatorModule>(options =>
         {
-            options.Services.ReplaceConfiguration(_configuration);
+            var builder = new ConfigurationBuilder()
+                .AddConfiguration(_configuration)
+                .AddJsonFile($"appsettings.json")
+                .AddJsonFile($"appsettings.local.json", true);
+            options.Services.ReplaceConfiguration(builder.Build());
             options.Services.AddSingleton(_hostEnvironment);
 
             options.UseAutofac();
@@ -38,7 +42,7 @@ public class SeedCreatorHostedService : IHostedService
 
         var symbolRegistrarService = _abpApplication.ServiceProvider.GetRequiredService<ISymbolRegistrarService>();
         var clientService = _abpApplication.ServiceProvider.GetRequiredService<IAElfClientService>();
-        const int count = 91;
+        const int count = 19;
         for (var i = 0; i < count; i++)
         {
             var symbol = GenerateRandomString(10);
