@@ -18,7 +18,7 @@ public abstract class AElfClientAbpTestBase<TStartupModule> : AbpIntegratedTest<
     {
         var builder = new ConfigurationBuilder();
         builder.AddJsonFile("appsettings.json", false);
-        builder.AddJsonFile("appsettings.secrets.json", true);
+        builder.AddJsonFile("appsettings.local.json", true);
         services.ReplaceConfiguration(builder.Build());
     }
 }

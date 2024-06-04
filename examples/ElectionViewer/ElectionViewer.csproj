@@ -21,6 +21,10 @@
       <None Update="shares.txt">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <Content Update="appsettings.json">
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
     <ItemGroup>
