@@ -38,28 +38,6 @@ public partial class TokenService : ContractServiceBase, ITokenService, ITransie
         };
     }
 
-    public async Task<SendTransactionResult> CreateNFTProtocolAsync(Contracts.NFT.CreateInput createInput)
-    {
-        var clientAlias = PreferGetUseMainChainClientAlias();
-        var tx = await PerformSendTransactionAsync("Create", createInput, clientAlias);
-        return new SendTransactionResult
-        {
-            Transaction = tx,
-            TransactionResult = await PerformGetTransactionResultAsync(tx.GetHash().ToHex(), clientAlias)
-        };
-    }
-
-    public async Task<SendTransactionResult> MintNFTAsync(MintInput mintInput)
-    {
-        var clientAlias = _clientConfigOptions.ClientAlias;
-        var tx = await PerformSendTransactionAsync("Mint", mintInput, clientAlias);
-        return new SendTransactionResult
-        {
-            Transaction = tx,
-            TransactionResult = await PerformGetTransactionResultAsync(tx.GetHash().ToHex(), clientAlias)
-        };
-    }
-
     public async Task<SendTransactionResult> ValidateTokenInfoExistsAsync(
         ValidateTokenInfoExistsInput validateTokenInfoExistsInput)
     {
@@ -109,20 +87,6 @@ public partial class TokenService : ContractServiceBase, ITokenService, ITransie
         };
     }
 
-    public async Task<SendTransactionResult> CrossChainCreateNFTProtocolAsync(
-        CrossChainCreateInput crossChainCreateInput)
-    {
-        var clientAlias = PreferGetUseSideChainClientAlias();
-        ContractAddress = Address.FromBase58(_contractOptions.NFTContractAddress);
-        var tx = await PerformSendTransactionAsync("CrossChainCreate", crossChainCreateInput,
-            clientAlias);
-        return new SendTransactionResult
-        {
-            Transaction = tx,
-            TransactionResult = await PerformGetTransactionResultAsync(tx.GetHash().ToHex(), clientAlias)
-        };
-    }
-
     public async Task<SendTransactionResult> TransferAsync(TransferInput transferInput)
     {
         var clientAlias = _clientConfigOptions.ClientAlias;
@@ -139,19 +103,6 @@ public partial class TokenService : ContractServiceBase, ITokenService, ITransie
     {
         var clientAlias = _clientConfigOptions.ClientAlias;
         var tx = await PerformSendTransactionAsync("Approve", approveInput,
-            clientAlias);
-        return new SendTransactionResult
-        {
-            Transaction = tx,
-            TransactionResult = await PerformGetTransactionResultAsync(tx.GetHash().ToHex(), clientAlias)
-        };
-    }
-
-    public async Task<SendTransactionResult> AddMintersAsync(AddMintersInput addMintersInput)
-    {
-        var clientAlias = _clientConfigOptions.ClientAlias;
-        ContractAddress = Address.FromBase58(_contractOptions.NFTContractAddress);
-        var tx = await PerformSendTransactionAsync("AddMinters", addMintersInput,
             clientAlias);
         return new SendTransactionResult
         {

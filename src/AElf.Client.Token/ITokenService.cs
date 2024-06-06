@@ -11,8 +11,6 @@ namespace AElf.Client.Token;
 public interface ITokenService
 {
     Task<SendTransactionResult> CreateTokenAsync(Contracts.MultiToken.CreateInput createInput);
-    Task<SendTransactionResult> CreateNFTProtocolAsync(Contracts.NFT.CreateInput createInput);
-    Task<SendTransactionResult> MintNFTAsync(MintInput mintInput);
     Task<SendTransactionResult> ValidateTokenInfoExistsAsync(ValidateTokenInfoExistsInput validateTokenInfoExistsInput);
     Task<SendTransactionResult> CrossChainCreateTokenAsync(CrossChainCreateTokenInput crossChainCreateTokenInput);
     Task<SendTransactionResult> CrossChainTransferAsync(CrossChainTransferInput crossChainTransferInput,
@@ -20,12 +18,9 @@ public interface ITokenService
     Task<SendTransactionResult> CrossChainReceiveTokenAsync(CrossChainReceiveTokenInput crossChainReceiveTokenInput,
         string clientAlias);
 
-    Task<SendTransactionResult> CrossChainCreateNFTProtocolAsync(CrossChainCreateInput crossChainCreateInput);
-
     Task<SendTransactionResult> TransferAsync(TransferInput transferInput);
     Task<SendTransactionResult> ApproveAsync(ApproveInput approveInput);
 
-    Task<SendTransactionResult> AddMintersAsync(AddMintersInput addMintersInput);
     Task<SendTransactionResult> SwapTokenAsync(SwapTokenInput swapTokenInput);
 
     Task<TokenInfo> GetTokenInfoAsync(string symbol);

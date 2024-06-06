@@ -21,6 +21,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\AElf.Client.Core\AElf.Client.Core.csproj" />
+      <ProjectReference Include="..\..\src\AElf.Client.Election\AElf.Client.Election.csproj" />
+      <ProjectReference Include="..\..\src\AElf.Client.Token\AElf.Client.Token.csproj" />
     </ItemGroup>
 
     <ItemGroup>

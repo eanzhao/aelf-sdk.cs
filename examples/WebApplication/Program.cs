@@ -1,5 +1,6 @@
 using Gradio.Net;
 using WebApplication;
+using WebApplication.Tools;
 
 var builder = Microsoft.AspNetCore.Builder.WebApplication.CreateBuilder();
 
@@ -33,7 +34,9 @@ async Task<Blocks> CreateBlocksAsync()
 {
     var blocks = gr.Blocks();
 
-    await ConsensusInfoViewer.CreateAsync(app);
+    // await ViewConsensusInfoTool.CreateAsync(app);
+    await TokenTransferTool.CreateAsync(app);
+    // await ViewElectionInfoTool.CreateAsync(app);
 
     return blocks;
 }

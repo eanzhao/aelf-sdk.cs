@@ -4,9 +4,9 @@ using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Gradio.Net;
 
-namespace WebApplication;
+namespace WebApplication.Tools;
 
-public static class ConsensusInfoViewer
+public static class ViewConsensusInfoTool
 {
     public static async Task CreateAsync(Microsoft.AspNetCore.Builder.WebApplication app)
     {

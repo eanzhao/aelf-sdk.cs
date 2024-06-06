@@ -65,31 +65,6 @@ public sealed class TokenServiceTests : AElfClientAbpContractServiceTestBase
     }
 
     [Theory]
-    [InlineData("CO429872652")]
-    public async Task CrossChainCreateNFTProtocolTest(string symbol)
-    {
-        await _tokenService.CrossChainCreateNFTProtocolAsync(new CrossChainCreateInput
-        {
-            Symbol = symbol
-        });
-    }
-    
-    [Theory]
-    [InlineData("BA417054001", "JQkVTWz5HXxEmNXzTtsAVHC7EUTeiFktzoFUu9TyA6MWngkem")]
-    public async Task AddMintersTest(string symbol, string addressBase58)
-    {
-        var address = Address.FromBase58(addressBase58);
-        await _tokenService.AddMintersAsync(new AddMintersInput
-        {
-            Symbol = symbol,
-            MinterList = new MinterList
-            {
-                Value = { address }
-            }
-        });
-    }
-
-    [Theory]
     [InlineData("bb16f381b0f2e795a988285dec3a68affacdccd7d3ac2e74edc808c102efcd95", 228, "9413000000000000000000")]
     public async Task SwapTokenTest(string swapIdHex, long receiptId, string amount)
     {
