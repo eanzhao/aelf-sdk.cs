@@ -56,4 +56,24 @@ public partial class ElectionService : ContractServiceBase, IElectionService, IT
         output.MergeFrom(result);
         return output.Value;
     }
+
+    public async Task<CandidateInformation> GetCandidateInformationAsync(StringValue input)
+    {
+        var useClientAlias = _clientConfigOptions.ClientAlias;
+        var result = await _clientService.ViewSystemAsync("AElf.ContractNames.Election", "GetCandidateInformation",
+            input, useClientAlias);
+        var output = new CandidateInformation();
+        output.MergeFrom(result);
+        return output;
+    }
+
+    public async Task<PubkeyList> GetVictoriesAsync(Empty input)
+    {
+        var useClientAlias = _clientConfigOptions.ClientAlias;
+        var result = await _clientService.ViewSystemAsync("AElf.ContractNames.Election", "GetVictories",
+            input, useClientAlias);
+        var output = new PubkeyList();
+        output.MergeFrom(result);
+        return output;
+    }
 }

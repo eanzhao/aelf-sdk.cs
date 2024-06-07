@@ -26,6 +26,8 @@ app.UseHttpsRedirection();
 
 app.UseGradio(await CreateBlocksAsync());
 
+app.MapGet("/test", () => "Hello World!");
+
 await app.RunAsync();
 
 return;
@@ -35,8 +37,8 @@ async Task<Blocks> CreateBlocksAsync()
     var blocks = gr.Blocks();
 
     // await ViewConsensusInfoTool.CreateAsync(app);
-    await TokenTransferTool.CreateAsync(app);
-    // await ViewElectionInfoTool.CreateAsync(app);
+    // await TokenTransferTool.CreateAsync(app);
+    await ViewElectionInfoTool.CreateAsync(app);
 
     return blocks;
 }
