@@ -41,7 +41,7 @@ public class ProfitClaimerHostedService : IHostedService
 
         var profitService = _abpApplication.ServiceProvider.GetRequiredService<IProfitService>();
 
-        var schemeId = Hash.LoadFromHex("d638bb79ebeaa0e9fd6c562c9734947d467b2753d8108733ce1d9139e5b1e721");
+        var schemeId = Hash.LoadFromHex("6871eb0727c6a5f35d216e48ff80752085e892fa271081a728a1607dc3dddda9");
         // foreach (var voter in await File.ReadAllLinesAsync("voters.txt", cancellationToken))
         // {
         //     var address = Address.FromBase58(voter);
@@ -53,13 +53,16 @@ public class ProfitClaimerHostedService : IHostedService
         //     Console.WriteLine($"{voter}:\n{details}");
         // }
 
-        var scheme =
-            await profitService.GetSchemeAsync(schemeId);
-        Console.WriteLine($"Scheme: {scheme}");
-        Console.WriteLine($"Total shares: {scheme.TotalShares}");
+        var details =
+            await profitService.GetProfitDetailsAsync(new GetProfitDetailsInput
+            {
+                SchemeId = schemeId,
+                Beneficiary = Address.FromBase58("2XDRhxzMbaYRCTe3NxRpARkBpjfQpyWdBKscQpc3Tph3m6dqHG")
+            });
         // 12287556623449740
         // 12231325157420058
         // 12152144293669496
+        Console.WriteLine(details);
 
         // var votersNeedToClaim = new Dictionary<string, long>();
         // foreach (var voter in await File.ReadAllLinesAsync("voters.txt", cancellationToken))

@@ -25,4 +25,24 @@ public partial class GenesisService
         smartContractRegistration.MergeFrom(result);
         return smartContractRegistration;
     }
+
+    public async Task<SmartContractRegistration> GetSmartContractRegistrationByAddress(Address address)
+    {
+        var useClientAlias = _clientConfigOptions.ClientAlias;
+        var result = await _clientService.ViewAsync(_contractAddress, "GetSmartContractRegistrationByAddress",
+            address , useClientAlias); 
+        var smartContractRegistration = new SmartContractRegistration();
+        smartContractRegistration.MergeFrom(result);
+        return smartContractRegistration;
+    }
+
+    public async Task<Address> GetContractAddressByName(Hash contractNameHash)
+    {
+        var useClientAlias = _clientConfigOptions.ClientAlias;
+        var result = await _clientService.ViewAsync(_contractAddress, "GetContractAddressByName",
+            contractNameHash , useClientAlias); 
+        var address = new Address();
+        address.MergeFrom(result);
+        return address;
+    }
 }

@@ -19,4 +19,6 @@ public interface IGenesisService
 
     Task<AuthorityInfo> GetContractDeploymentController();
     Task<SmartContractRegistration> GetSmartContractRegistrationByCodeHash(Hash codeHash);
+    Task<SmartContractRegistration> GetSmartContractRegistrationByAddress(Address address);
+    Task<Address> GetContractAddressByName(Hash contractNameHash);
 }
