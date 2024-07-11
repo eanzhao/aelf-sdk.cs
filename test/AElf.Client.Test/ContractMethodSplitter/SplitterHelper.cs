@@ -14,7 +14,6 @@ public static class SplitterHelper
         var syntaxTrees = new List<SyntaxTree>();
         var classList = new List<ClassDeclarationSyntax>();
         var csFiles = Directory.EnumerateFiles(codePath, "*.cs", SearchOption.AllDirectories);
-        var methods = new List<string>();
 
         var collector = new PartialClassCollector();
 
@@ -27,7 +26,7 @@ public static class SplitterHelper
 
         foreach (var syntaxTree in syntaxTrees)
         {
-            collector.Visit(syntaxTree.GetRoot());
+            collector.Visit(await syntaxTree.GetRootAsync());
         }
 
         foreach (var pair in collector.PartialClasses)
@@ -46,11 +45,12 @@ public static class SplitterHelper
             classList.Add(mergedClass);
         }
 
-        var finder = new PublicOverrideMethodFinder();
+        var finder = new ContractMethodFinder();
 
         foreach (var classDeclarationSyntax in classList)
         {
             finder.Visit(classDeclarationSyntax);
+            finder.ProcessNodes();
         }
 
         if (!Directory.Exists(outputPath))

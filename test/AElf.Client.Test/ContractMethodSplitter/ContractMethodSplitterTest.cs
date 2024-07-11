@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using AElf.Client.Core;
 using AElf.Client.Genesis;
 
 namespace AElf.Client.Test.ContractMethodSplitter;
@@ -18,7 +17,7 @@ public class ContractMethodSplitterTest : AElfClientAbpContractServiceTestBase
     {
         var contractAddress =
             await _genesisService.GetContractAddressByName(
-                HashHelper.ComputeFrom("AElf.ContractNames.Token"));
+                HashHelper.ComputeFrom("AElf.ContractNames.Vote"));
         var scr = await _genesisService.GetSmartContractRegistrationByAddress(contractAddress);
         var code = scr.Code.ToByteArray();
         await DecompilerHelper.Decompile(code, "./code");
