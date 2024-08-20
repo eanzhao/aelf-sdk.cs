@@ -31,7 +31,7 @@ public class AEDPoSViewerService : ITransientDependency
 
         var clientService = scope.ServiceProvider.GetRequiredService<IAElfClientService>();
 
-        await QueryCurrentRoundInformation(clientService, "Example");
+        await QueryCurrentRoundInformation(clientService, "MainNetMainChain");
         //await QueryConsensusCommandAsync(clientService,
             //"04427f41c3a4f27efa69bf38943895f0fd5c60d385efeb43034e7cc76da08499f6a469f9f7f41276a2922ab3700e8c33feece89f12c2a3d4c061855d2ea1307a12");
     }

@@ -29,4 +29,19 @@ public static class ABIExtensions
 
         return selector;
     }
+
+    public static bool GetMutates(this SolangABI solangAbi, string methodName)
+    {
+        var mutates = (solangAbi.Spec.Messages.FirstOrDefault(m => m.Label == methodName)?.Mutates ??
+                       solangAbi.Spec.Messages.FirstOrDefault(m => m.Label == $"{methodName}_")
+                           ?.Mutates) ??
+                      solangAbi.Spec.Messages.FirstOrDefault(m => m.Label.StartsWith(methodName))
+                          ?.Mutates;
+        if (mutates == null)
+        {
+            throw new SelectorNotFoundException($"Mutates of {methodName} not found.");
+        }
+
+        return mutates.Value;
+    }
 }

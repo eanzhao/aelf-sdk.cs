@@ -13,4 +13,6 @@ public interface ISolidityContractService
         Weight? gasLimit = null, long value = 0);
 
     Task<byte[]> CallAsync(string selector, ByteString parameter);
+
+    Task<SendTransactionResult> EstimateFeeAsync(string selector, ByteString? parameter = null);
 }

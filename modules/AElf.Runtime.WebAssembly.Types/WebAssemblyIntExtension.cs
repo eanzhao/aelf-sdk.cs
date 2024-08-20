@@ -18,19 +18,4 @@ public static class WebAssemblyIntExtension
         Array.Reverse(bytes, 0, bytes.Length);
         return new ABIValue("uint256", new BigInteger(bytes, true));
     }
-
-    public static ABIValue ToWebAssemblyUInt256(this BigInteger value)
-    {
-        var bytes = value.ToByteArray().RightPad(32);
-        Array.Reverse(bytes, 0, bytes.Length);
-        return new ABIValue("uint256", new BigInteger(bytes, true));
-    }
-
-    public static ABIValue? ToWebAssemblyUInt256(this string value)
-    {
-        if (!BigInteger.TryParse(value, out var bigInteger)) return null;
-        var bytes = bigInteger.ToByteArray().RightPad(32);
-        Array.Reverse(bytes, 0, bytes.Length);
-        return new ABIValue("uint256", new BigInteger(bytes, true));
-    }
 }

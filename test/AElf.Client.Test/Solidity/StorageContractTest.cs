@@ -8,6 +8,7 @@ using AElf.SolidityContract;
 using AElf.Types;
 using Google.Protobuf;
 using Microsoft.Extensions.Options;
+using Scale.Encoders;
 using Shouldly;
 using Solang;
 
@@ -53,8 +54,8 @@ public class StorageContractTest : AElfClientAbpContractServiceTestBase
         _solidityContractService =
             new SolidityContractService(_aelfClientService, contractAddress, _aelfClientConfigOptions);
         var selector = _solangAbi.GetSelector("store");
-        var sendTxResult = await _solidityContractService.SendAsync(selector,
-            1616.ToWebAssemblyUInt256().ToParameter());
+        var parameter = ByteString.CopyFrom(new IntegerTypeEncoder().Encode(1616));
+        var sendTxResult = await _solidityContractService.SendAsync(selector, parameter);
         sendTxResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
         return contractAddress;
     }

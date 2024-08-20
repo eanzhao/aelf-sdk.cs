@@ -43,7 +43,7 @@ public class SolidityContractService : ContractServiceBase, ISolidityContractSer
         {
             Parameter = parameter ?? ByteString.Empty,
             Value = value,
-            GasLimit = gasLimit ?? new Weight()
+            GasLimit = gasLimit ?? new Weight { ProofSize = int.MaxValue, RefTime = int.MaxValue }
         };
         var tx = await PerformSendTransactionAsync(selector, input, clientAlias);
         return new SendTransactionResult
@@ -62,5 +62,20 @@ public class SolidityContractService : ContractServiceBase, ISolidityContractSer
         };
         var result = await _clientService.ViewAsync(_contractAddress.ToBase58(), selector, input, clientAlias);
         return result;
+    }
+
+    public async Task<SendTransactionResult> EstimateFeeAsync(string selector, ByteString? parameter = null)
+    {
+        var clientAlias = _clientConfigOptions.ClientAlias;
+        var input = new SolidityTransactionParameter
+        {
+            Parameter = parameter ?? ByteString.Empty,
+        };
+        var tx = await PerformSendTransactionAsync(selector, input, clientAlias);
+        return new SendTransactionResult
+        {
+            Transaction = tx,
+            TransactionResult = await PerformGetTransactionResultAsync(tx.GetHash().ToHex(), clientAlias)
+        };
     }
 }

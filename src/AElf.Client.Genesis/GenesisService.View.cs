@@ -1,3 +1,4 @@
+using AElf.Standards.ACS0;
 using AElf.Types;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
@@ -44,5 +45,15 @@ public partial class GenesisService
         var address = new Address();
         address.MergeFrom(result);
         return address;
+    }
+
+    public async Task<ContractInfo> GetContractInfo(Address contractAddress)
+    {
+        var useClientAlias = _clientConfigOptions.ClientAlias;
+        var result = await _clientService.ViewAsync(_contractAddress, "GetContractInfo",
+            contractAddress, useClientAlias);
+        var contractInfo = new ContractInfo();
+        contractInfo.MergeFrom(result);
+        return contractInfo;
     }
 }

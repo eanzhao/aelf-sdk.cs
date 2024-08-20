@@ -54,7 +54,7 @@ public interface I{contractName}Stub
         var interfaceList = new List<string>();
         foreach (var message in solangAbi.Spec.Messages.Where(message => !interfaceList.Contains(message.Label)))
         {
-            stringBuilder.Append(GenerateMethodInterface(message.Label));
+            stringBuilder.Append(GenerateMethodInterface(solangAbi, message.Label));
             interfaceList.Add(message.Label);
         }
 
@@ -121,22 +121,45 @@ public partial class {contractName}Stub : I{contractName}Stub, ITransientDepende
         context.AddSource($"{contractName}Stub.g.cs", SourceText.From(stringBuilder.ToString(), Encoding.UTF8));
     }
 
-    private string GenerateMethodInterface(string label)
+    private string GenerateMethodInterface(SolangABI solangAbi, string label)
     {
-        return $@"
+        var mutates = solangAbi.GetMutates(label);
+
+        if (mutates)
+        {
+            return $@"
     Task<SendTransactionResult> {GetMethodName(label)}Async(ByteString? parameter = null, Weight? gasLimit = null, long value = 0);
 ";
+        }
+        
+        return $@"
+    Task<byte[]> {GetMethodName(label)}Async(ByteString? parameter = null);
+";
+
     }
 
     private string GenerateMethodImplementation(SolangABI solangAbi, string label)
     {
         var selector = solangAbi.GetSelector(label);
-        return $@"
+        var mutates = solangAbi.GetMutates(label);
+        if (mutates)
+        {
+            return $@"
 
     public async Task<SendTransactionResult> {GetMethodName(label)}Async(ByteString? parameter = null, Weight? gasLimit = null, long value = 0)
     {{
         AssertContractDeployed();
         return await _solidityContractService.SendAsync(""{selector}"", parameter ?? ByteString.Empty, gasLimit, value);
+    }}
+";
+        }
+
+        return $@"
+
+    public async Task<byte[]> {GetMethodName(label)}Async(ByteString? parameter = null)
+    {{
+        AssertContractDeployed();
+        return await _solidityContractService.CallAsync(""{selector}"", parameter ?? ByteString.Empty);
     }}
 ";
     }
