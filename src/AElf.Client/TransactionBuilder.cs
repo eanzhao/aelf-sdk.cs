@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using AElf.Cryptography;
 using AElf.Types;
 using Google.Protobuf;
@@ -51,11 +52,11 @@ namespace AElf.Client
             return this;
         }
     
-        public Transaction Build()
+        public async Task<Transaction> Build()
         {
             var keyPair = CryptoHelper.FromPrivateKey(PrivateKey);
             var from = Address.FromPublicKey(keyPair.PublicKey).ToBase58();
-            var unsignedTx = _aelfClient.GenerateTransactionAsync(from, ContractAddress, MethodName, Parameter).Result;
+            var unsignedTx = await _aelfClient.GenerateTransactionAsync(from, ContractAddress, MethodName, Parameter);
             var signedTx = _aelfClient.SignTransaction(PrivateKey, unsignedTx);
             return signedTx;
         }

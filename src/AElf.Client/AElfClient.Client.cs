@@ -81,14 +81,16 @@ namespace AElf.Client
                 {
                     AssertValidAddress(to);
                     var chainStatus = await GetChainStatusAsync();
+                    var height = chainStatus.BestChainHeight - 8;
+                    var blockDto = await GetBlockByHeightAsync(height);
                     var transaction = new Transaction
                     {
                         From = from.ToAddress(),
                         To = Address.FromBase58(to),
                         MethodName = methodName,
                         Params = input.ToByteString(),
-                        RefBlockNumber = chainStatus.BestChainHeight,
-                        RefBlockPrefix = ByteString.CopyFrom(Hash.LoadFromHex(chainStatus.BestChainHash).Value
+                        RefBlockNumber = height,
+                        RefBlockPrefix = ByteString.CopyFrom(Hash.LoadFromHex(blockDto?.BlockHash).Value
                             .Take(4).ToArray())
                     };
     

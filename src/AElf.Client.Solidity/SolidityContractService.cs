@@ -3,6 +3,7 @@ using AElf.Client.Core.Options;
 using AElf.Runtime.WebAssembly;
 using AElf.Types;
 using Google.Protobuf;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Volo.Abp.DependencyInjection;
 
@@ -26,6 +27,7 @@ public class SolidityContractService : ContractServiceBase, ISolidityContractSer
         AElfClientConfigOptions clientConfigOptions) : base(clientService,
         contractAddress)
     {
+        _clientService = clientService;
         _contractAddress = contractAddress;
         _clientConfigOptions = clientConfigOptions;
     }
@@ -46,11 +48,47 @@ public class SolidityContractService : ContractServiceBase, ISolidityContractSer
             GasLimit = gasLimit ?? new Weight { ProofSize = int.MaxValue, RefTime = int.MaxValue }
         };
         var tx = await PerformSendTransactionAsync(selector, input, clientAlias);
+        var a = tx.Params.ToByteArray().ToHex();
         return new SendTransactionResult
         {
             Transaction = tx,
             TransactionResult = await PerformGetTransactionResultAsync(tx.GetHash().ToHex(), clientAlias)
         };
+    }
+    
+    public async Task<string> SendWithoutResultAsync(string selector, ByteString? parameter = null,
+        Weight? gasLimit = null, long value = 0)
+    {
+        var clientAlias = _clientConfigOptions.ClientAlias;
+        var input = new SolidityTransactionParameter
+        {
+            Parameter = parameter ?? ByteString.Empty,
+            Value = value,
+            GasLimit = gasLimit ?? new Weight()
+        };
+        var tx = await PerformSendTransactionAsync(selector, input, clientAlias);
+        return tx.GetHash().ToHex();
+    }
+    
+    public async Task<string> GenerateRawTransaction(string selector, ByteString? parameter = null, string from = null,
+        Weight? gasLimit = null, long value = 0)
+    {
+        var clientAlias = _clientConfigOptions.ClientAlias;
+        var input = new SolidityTransactionParameter
+        {
+            Parameter = parameter ?? ByteString.Empty,
+            Value = value,
+            GasLimit = gasLimit ?? new Weight()
+        };
+        var tx = await GenerateRawTransaction(selector, input, clientAlias, from);
+        return tx;
+    }
+
+    public async Task<List<string>?> SendMultiTransactions(List<string> rawTransactions)
+    {
+        var clientAlias = _clientConfigOptions.ClientAlias;
+        var txIdList = await PerformSendTransactionsAsync(clientAlias, rawTransactions);
+        return txIdList;
     }
 
     public async Task<byte[]> CallAsync(string selector, ByteString parameter)

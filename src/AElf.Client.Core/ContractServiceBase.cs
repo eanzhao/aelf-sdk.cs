@@ -51,6 +51,19 @@ public class ContractServiceBase
 
         return await _clientService.SendSystemAsync(smartContractName, methodName, parameter, useClientAlias);
     }
+    
+    protected async Task<string> GenerateRawTransaction(string methodName, IMessage parameter,
+        string useClientAlias, string? from = null)
+    {
+        return await _clientService.GenerateRawTransaction(ContractAddress.ToBase58(), methodName, parameter, useClientAlias, from);
+    }
+    
+    protected async Task<List<string>?> PerformSendTransactionsAsync( string useClientAlias, List<string> rawTransactions)
+    {
+        var raws = string.Join(",", rawTransactions);
+
+        return await _clientService.SendTransactionsAsync(useClientAlias, rawTransactions);
+    }
 
     protected async Task<TransactionResult> PerformGetTransactionResultAsync(string transactionId,
         string useClientAlias)

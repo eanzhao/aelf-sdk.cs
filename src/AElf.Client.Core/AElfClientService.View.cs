@@ -41,7 +41,7 @@ public partial class AElfClientService : IAElfClientService, ITransientDependenc
             .UseContract(contractAddress)
             .UseMethod(methodName)
             .UseParameter(parameter)
-            .Build();
+            .Build().Result;
         return await PerformViewAsync(aelfClient, tx);
     }
 
@@ -58,7 +58,7 @@ public partial class AElfClientService : IAElfClientService, ITransientDependenc
             .UseSystemContract(systemContractName)
             .UseMethod(methodName)
             .UseParameter(parameter)
-            .Build();
+            .Build().Result;
         return await PerformViewAsync(aelfClient, tx);
     }
 

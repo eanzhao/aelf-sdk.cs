@@ -14,6 +14,9 @@ public interface IAElfClientService
     Task<Transaction> SendAsync(string contractAddress, string methodName, IMessage parameter,
         string clientAlias, string? accountAlias = null, string? accountAddress = null);
 
+    Task<List<string>?> SendTransactionsAsync(string clientAliasOrEndpoint, List<string> rawTransactions);
+    Task<string> GenerateRawTransaction(string contractAddress, string methodName, IMessage parameter,
+        string clientAliasOrEndpoint, string? address = null, string? alias = null);
     Task<Transaction> SendSystemAsync(string systemContractName, string methodName, IMessage parameter,
         string clientAlias, string? accountAlias = null, string? accountAddress = null);
 

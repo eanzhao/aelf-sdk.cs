@@ -86,6 +86,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scale.Core", "modules\Scale
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scale.Encoders", "modules\Scale.Encoders\Scale.Encoders.csproj", "{6F03B082-E167-4D67-AA2F-1BE41F70BD9C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchScript", "examples\BatchScript\BatchScript.csproj", "{C6E8C071-E333-4C59-9BE3-EAE46B768175}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -131,6 +133,7 @@ Global
 		{CF70FA3D-90C7-4B43-8C62-05EDE1E35036} = {5D1BDC45-D6F1-4359-868B-CB85CEC4ABD8}
 		{8D0B2FA4-B4D4-4C40-A7AC-CF1EEC77B825} = {153CDCAD-8D17-457E-BC8D-8BD2766FE686}
 		{6F03B082-E167-4D67-AA2F-1BE41F70BD9C} = {153CDCAD-8D17-457E-BC8D-8BD2766FE686}
+		{C6E8C071-E333-4C59-9BE3-EAE46B768175} = {5D1BDC45-D6F1-4359-868B-CB85CEC4ABD8}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1AE7844D-B4D9-4F5A-9D25-7E551B61138E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -289,5 +292,9 @@ Global
 		{6F03B082-E167-4D67-AA2F-1BE41F70BD9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F03B082-E167-4D67-AA2F-1BE41F70BD9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F03B082-E167-4D67-AA2F-1BE41F70BD9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6E8C071-E333-4C59-9BE3-EAE46B768175}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6E8C071-E333-4C59-9BE3-EAE46B768175}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6E8C071-E333-4C59-9BE3-EAE46B768175}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6E8C071-E333-4C59-9BE3-EAE46B768175}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
