@@ -27,6 +27,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\modules\AElf.Runtime.WebAssembly.Types\AElf.Runtime.WebAssembly.Types.csproj" />
+        <ProjectReference Include="..\..\modules\Scale.Decoders\Scale.Decoders.csproj" />
         <ProjectReference Include="..\..\modules\Scale.Encoders\Scale.Encoders.csproj" />
         <ProjectReference Include="..\..\modules\Scale\Scale.csproj" />
         <ProjectReference Include="..\..\src\AElf.Client.Election\AElf.Client.Election.csproj" />

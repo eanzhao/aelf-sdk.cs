@@ -4,8 +4,8 @@ namespace Scale.Decoders;
 
 public class IntegerTypeDecoder
 {
-    // public static BigInteger Decode(byte[] bytes)
-    // {
-    //     
-    // }
+    public BigInteger Decode(byte[] bytes)
+    {
+        return new BigInteger(bytes);
+    }
 }

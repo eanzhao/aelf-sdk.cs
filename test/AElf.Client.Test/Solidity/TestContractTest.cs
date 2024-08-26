@@ -7,14 +7,18 @@ using AElf.Client.Genesis;
 using AElf.Client.Solidity;
 using AElf.Client.Token;
 using AElf.Contracts.MultiToken;
+using AElf.Runtime.WebAssembly;
 using AElf.SolidityContract;
 using AElf.Types;
 using Google.Protobuf;
 using Microsoft.Extensions.Options;
 using Nethereum.ABI;
+using Scale;
+using Scale.Decoders;
 using Shouldly;
 using Solang;
 using Xunit.Abstractions;
+using AddressType = Scale.AddressType;
 
 namespace AElf.Client.Test.Solidity;
 
@@ -61,6 +65,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         var contractAddress = await DeployMockTokenContract();
         var executionResult = await _mockTokenStub.InitializeAsync(Scale.TupleType.From(Scale.StringType.From("Elf token"),
             Scale.StringType.From("ELF")));
+        _testOutputHelper.WriteLine(executionResult.TransactionResult.TransactionId.ToHex());
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
         var name = await _mockTokenStub.NameAsync();
         name.ShouldBe(Scale.StringType.GetBytesFrom("Elf token"));
@@ -82,6 +87,46 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         name.ShouldBe(Scale.StringType.GetBytesFrom("Elf token"));
         var symbol = await _mockTokenStub.SymbolAsync();
         symbol.ShouldBe(Scale.StringType.GetBytesFrom("ELF"));
+    }
+
+    [Fact]
+    public async Task<Address> MintTest()
+    {
+        var contractAddress = await InitializeMockTokenContract();
+        var executionResult = await _mockTokenStub.MintAsync(Scale.TupleType.From(
+            AddressType.FromBase58("2ceeqZ7iNTLXfzkmNzXCiPYiZTbkRAxH48FS7rBCX5qFtptajP"),
+                IntegerType.From(100000000)));
+        _testOutputHelper.WriteLine($"mint tx: {executionResult.TransactionResult.TransactionId}");
+        executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+        var balance = await _mockTokenStub.BalanceOfAsync(AddressType.FromBase58("2ceeqZ7iNTLXfzkmNzXCiPYiZTbkRAxH48FS7rBCX5qFtptajP"));
+        ((long)new IntegerTypeDecoder().Decode(balance)).ShouldBePositive();
+        return contractAddress;
+    }
+
+    [Fact]
+    public async Task TransferTest()
+    {
+        await MintTest();
+
+        {
+            var balance =
+                await _mockTokenStub.BalanceOfAsync(
+                    AddressType.FromBase58("2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd"));
+            new IntegerTypeDecoder().Decode(balance).ShouldBe(0);
+        }
+
+        var executionResult = await _mockTokenStub.TransferAsync(Scale.TupleType.From(
+            AddressType.FromBase58("2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd"),
+            IntegerType.From(100000000)));
+        _testOutputHelper.WriteLine($"transfer tx: {executionResult.TransactionResult.TransactionId}");
+        executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+
+        {
+            var balance =
+                await _mockTokenStub.BalanceOfAsync(
+                    AddressType.FromBase58("2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd"));
+            new IntegerTypeDecoder().Decode(balance).ShouldBe(100000000);
+        }
     }
 
     [Fact]
