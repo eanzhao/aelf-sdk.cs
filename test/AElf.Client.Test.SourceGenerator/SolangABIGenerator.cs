@@ -48,6 +48,7 @@ namespace AElf.Client.Test;
 
 public interface I{contractName}Stub
 {{
+    void SetContractAddressToStub(Address contractAddress);
     Task<Address> DeployAsync();
 ");
 
@@ -96,6 +97,11 @@ public partial class {contractName}Stub : I{contractName}Stub, ITransientDepende
         }});
         _solidityContractService = new SolidityContractService(_clientService, contractAddress, _clientConfigOptions);
         return contractAddress;
+    }}
+
+    public void SetContractAddressToStub(Address contractAddress)
+    {{
+        _solidityContractService = new SolidityContractService(_clientService, contractAddress, _clientConfigOptions);
     }}
 
     private void AssertContractDeployed()

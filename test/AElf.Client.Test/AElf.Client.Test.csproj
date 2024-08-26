@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -28,6 +28,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\modules\AElf.Runtime.WebAssembly.Types\AElf.Runtime.WebAssembly.Types.csproj" />
         <ProjectReference Include="..\..\modules\Scale.Encoders\Scale.Encoders.csproj" />
+        <ProjectReference Include="..\..\modules\Scale\Scale.csproj" />
         <ProjectReference Include="..\..\src\AElf.Client.Election\AElf.Client.Election.csproj" />
         <ProjectReference Include="..\..\src\AElf.Client.Faucet\AElf.Client.Faucet.csproj" />
         <ProjectReference Include="..\..\src\AElf.Client.Solidity\AElf.Client.Solidity.csproj" />

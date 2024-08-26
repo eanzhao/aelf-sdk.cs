@@ -29,6 +29,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
     private readonly ITokenService _tokenService;
     private readonly IAElfClientService _aelfClientService;
     private readonly AElfClientConfigOptions _aelfClientConfigOptions;
+    private readonly IMockTokenStub _mockTokenStub;
     private ISolidityContractService _solidityContractService;
     private IAElfAccountProvider _accountProvider;
     private SolangABI _solangAbi;
@@ -43,6 +44,44 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         _aelfClientService = GetRequiredService<IAElfClientService>();
         _aelfClientConfigOptions = GetRequiredService<IOptionsSnapshot<AElfClientConfigOptions>>().Value;
         _accountProvider = GetRequiredService<IAElfAccountProvider>();
+        _mockTokenStub = GetRequiredService<IMockTokenStub>();
+    }
+    
+    [Fact]
+    public async Task<Address> DeployMockTokenContract()
+    {
+        var contractAddress = await _mockTokenStub.DeployAsync();
+        _testOutputHelper.WriteLine($"MockToken contract address: {contractAddress.ToBase58()}");
+        return contractAddress;
+    }
+
+    [Fact]
+    public async Task<Address> InitializeMockTokenContract()
+    {
+        var contractAddress = await DeployMockTokenContract();
+        var executionResult = await _mockTokenStub.InitializeAsync(Scale.TupleType.From(Scale.StringType.From("Elf token"),
+            Scale.StringType.From("ELF")));
+        executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+        var name = await _mockTokenStub.NameAsync();
+        name.ShouldBe(Scale.StringType.GetBytesFrom("Elf token"));
+        var symbol = await _mockTokenStub.SymbolAsync();
+        symbol.ShouldBe(Scale.StringType.GetBytesFrom("ELF"));
+        return contractAddress;
+    }
+
+    [Fact]
+    public async Task InitializeMockContractWithoutDeploy()
+    {
+        var contractAddress = Address.FromBase58("2u6Dd139bHvZJdZ835XnNKL5y6cxqzV9PEWD5fZdQXdFZLgevc");
+        _mockTokenStub.SetContractAddressToStub(contractAddress);
+        var executionResult = await _mockTokenStub.InitializeAsync(Scale.TupleType.From(Scale.StringType.From("Elf token"),
+            Scale.StringType.From("ELF")));
+        _testOutputHelper.WriteLine($"initialize tx: {executionResult.TransactionResult.TransactionId}");
+        executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+        var name = await _mockTokenStub.NameAsync();
+        name.ShouldBe(Scale.StringType.GetBytesFrom("Elf token"));
+        var symbol = await _mockTokenStub.SymbolAsync();
+        symbol.ShouldBe(Scale.StringType.GetBytesFrom("ELF"));
     }
 
     [Fact]
