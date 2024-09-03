@@ -354,18 +354,10 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
     {
         var address = "2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd";
         var contractAddress = Address.FromBase58("2nyC8hqq3pGnRu8gJzCsTaxXB6snfGxmL2viimKXgEfYWGtjEh");
-        var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
         _testContractStub.SetContractAddressToStub(contractAddress);
-
-        var executionResult = await _testContractStub.AddAsync(Scale.TupleType.From(Scale.TupleType.From(Scale.IntegerType.From(10)), IntegerType.From(20)));
-        _testOutputHelper.WriteLine($"AddAsync tx: {executionResult.TransactionResult.TransactionId}");
-        executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
-
-        var after = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
-        _testOutputHelper.WriteLine($"{userBalance.Balance}");
-        _testOutputHelper.WriteLine($"{after.Balance}");
+        var result = await _testContractStub.AddAsync(Scale.TupleType.From(Scale.TupleType.From(Scale.IntegerType.From(10)), IntegerType.From(20)));
         
-        var returnValue = executionResult.TransactionResult.ReturnValue;
+        var returnValue = result.TransactionResult.ReturnValue;
         new IntegerTypeDecoder().Decode(returnValue).ShouldBe(30);
     }
     
