@@ -2,7 +2,7 @@ using Google.Protobuf;
 
 namespace Scale;
 
-public class TupleType : ABIType
+public class TupleType
 {
     public static ByteString From(params ByteString[] values)
     {

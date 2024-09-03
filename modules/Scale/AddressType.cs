@@ -7,7 +7,7 @@ namespace Scale;
 /// <summary>
 /// For aelf address.
 /// </summary>
-public class AddressType : ABIType
+public class AddressType
 {
     public static ByteString FromBase58(string address)
     {

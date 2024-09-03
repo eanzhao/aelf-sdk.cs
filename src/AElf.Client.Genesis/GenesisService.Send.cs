@@ -85,4 +85,16 @@ public partial class GenesisService : ContractServiceBase, IGenesisService, ITra
             TransactionResult = await PerformGetTransactionResultAsync(tx.GetHash().ToHex(), useClientAlias)
         };
     }
+
+    public async Task<SendTransactionResult> UploadSoliditySmartContract(UploadSoliditySmartContractInput uploadSoliditySmartContractInput)
+    {
+        var useClientAlias = _clientConfigOptions.ClientAlias;
+        var tx = await _clientService.SendAsync(_contractAddress, "UploadSoliditySmartContract",
+            uploadSoliditySmartContractInput, useClientAlias);
+        return new SendTransactionResult
+        {
+            Transaction = tx,
+            TransactionResult = await PerformGetTransactionResultAsync(tx.GetHash().ToHex(), useClientAlias)
+        };
+    }
 }

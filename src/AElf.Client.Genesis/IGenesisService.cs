@@ -15,6 +15,7 @@ public interface IGenesisService
 
     Task<SendTransactionResult> ReleaseCodeCheckedContract(ReleaseContractInput releaseContractInput);
     Task<SendTransactionResult> DeploySoliditySmartContract(DeploySoliditySmartContractInput deploySoliditySmartContractInput);
+    Task<SendTransactionResult> UploadSoliditySmartContract(UploadSoliditySmartContractInput uploadSoliditySmartContractInput);
 
 
     Task<AuthorityInfo> GetContractDeploymentController();
