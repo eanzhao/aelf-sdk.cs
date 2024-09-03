@@ -1,5 +1,5 @@
-using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using AElf.Client.Core;
 using AElf.Client.Core.Options;
@@ -7,7 +7,6 @@ using AElf.Client.Genesis;
 using AElf.Client.Solidity;
 using AElf.Client.Token;
 using AElf.Contracts.MultiToken;
-using AElf.Runtime.WebAssembly;
 using AElf.SolidityContract;
 using AElf.Types;
 using Google.Protobuf;
@@ -34,6 +33,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
     private readonly IAElfClientService _aelfClientService;
     private readonly AElfClientConfigOptions _aelfClientConfigOptions;
     private readonly IMockTokenStub _mockTokenStub;
+    private readonly ITestContractImplementationStub _testContractStub;
     private ISolidityContractService _solidityContractService;
     private IAElfAccountProvider _accountProvider;
     private SolangABI _solangAbi;
@@ -49,6 +49,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         _aelfClientConfigOptions = GetRequiredService<IOptionsSnapshot<AElfClientConfigOptions>>().Value;
         _accountProvider = GetRequiredService<IAElfAccountProvider>();
         _mockTokenStub = GetRequiredService<IMockTokenStub>();
+        _testContractStub = GetRequiredService<ITestContractImplementationStub>();
     }
     
     [Fact]
@@ -56,17 +57,28 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
     {
         var contractAddress = await _mockTokenStub.DeployAsync();
         _testOutputHelper.WriteLine($"MockToken contract address: {contractAddress.ToBase58()}");
+        
+        var contractInfo = await _genesisService.GetContractInfo(contractAddress); 
+        contractInfo.Category.ShouldBe(1);
+        contractInfo.IsSystemContract.ShouldBeFalse();
+        contractInfo.Version.ShouldBe(1);
+        _testOutputHelper.WriteLine(contractInfo.ContractVersion);
+        
         return contractAddress;
     }
 
     [Fact]
     public async Task<Address> InitializeMockTokenContract()
     {
+        var balance = await _tokenService.GetTokenBalanceAsync("ELF", Address.FromBase58("2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd"));
         var contractAddress = await DeployMockTokenContract();
         var executionResult = await _mockTokenStub.InitializeAsync(Scale.TupleType.From(Scale.StringType.From("Elf token"),
             Scale.StringType.From("ELF")));
         _testOutputHelper.WriteLine(executionResult.TransactionResult.TransactionId.ToHex());
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+        var afterBalance = await _tokenService.GetTokenBalanceAsync("ELF", Address.FromBase58("2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd"));
+        _testOutputHelper.WriteLine($"{balance.Balance}");
+        _testOutputHelper.WriteLine($"{afterBalance.Balance}");
         var name = await _mockTokenStub.NameAsync();
         name.ShouldBe(Scale.StringType.GetBytesFrom("Elf token"));
         var symbol = await _mockTokenStub.SymbolAsync();
@@ -77,7 +89,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
     [Fact]
     public async Task InitializeMockContractWithoutDeploy()
     {
-        var contractAddress = Address.FromBase58("2u6Dd139bHvZJdZ835XnNKL5y6cxqzV9PEWD5fZdQXdFZLgevc");
+        var contractAddress = Address.FromBase58("2LUmicHyH4RXrMjG4beDwuDsiWJESyLkgkwPdGTR8kahRzq5XS");
         _mockTokenStub.SetContractAddressToStub(contractAddress);
         var executionResult = await _mockTokenStub.InitializeAsync(Scale.TupleType.From(Scale.StringType.From("Elf token"),
             Scale.StringType.From("ELF")));
@@ -152,30 +164,69 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         return contractAddress;
     }
     
+    [Fact]
+    public async Task<Address> DeployTestContractTest()
+    {
+        var address = "2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd";
+        var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
+        var contractAddress = await _testContractStub.DeployAsync();
+        _testOutputHelper.WriteLine($"Test contract address: {contractAddress.ToBase58()}");
+      
+        var contractInfo = await _genesisService.GetContractInfo(contractAddress); 
+        contractInfo.Category.ShouldBe(1);
+        contractInfo.IsSystemContract.ShouldBeFalse();
+        contractInfo.Version.ShouldBe(1);
+        _testOutputHelper.WriteLine(contractInfo.ContractVersion);
+
+               
+        var after = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
+        _testOutputHelper.WriteLine($"{userBalance.Balance}");
+        _testOutputHelper.WriteLine($"{after.Balance}");
+        
+        return contractAddress;
+    }
+
+    [Fact]
+    public async Task SetAdmin()
+    {
+        var address = "2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd";
+        var contractAddress = Address.FromBase58("2NxwCPAGJr4knVdmwhb1cK7CkZw5sMJkRDLnT7E2GoDP2dy5iZ");
+        var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
+        
+        _testContractStub.SetContractAddressToStub(contractAddress);
+        var executionResult = await _testContractStub.InitializeAsync(AddressType.FromBase58(address));
+        _testOutputHelper.WriteLine($"SetAdmin tx: {executionResult.TransactionResult.TransactionId}");
+        executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+
+        var after = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
+        _testOutputHelper.WriteLine($"{userBalance.Balance}");
+        _testOutputHelper.WriteLine($"{after.Balance}");
+
+        var getAdmin = await _testContractStub.GetAdminAsync();
+        _testOutputHelper.WriteLine($"{Address.FromBytes(getAdmin).ToBase58()}");
+    }
+
     // token GwsSp1MZPmkMvXdbfSCDydHhZtDpvqkFpmPvStYho288fb7QZ
     
     [Fact]
-    public async Task<Address> InitialTest()
+    public async Task SetManyValueAsyncTest()
     {
-        var (wasmCode, solangAbi) = await LoadWasmContractCodeAsync(TestContractPath);
-        _solangAbi = solangAbi;
         var address = "2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd";
-        var contractAddress = Address.FromBase58("2hqsqJndRAZGzk96fsEvyuVBTAvoBjcuwTjkuyJffBPueJFrLa");
-        _solidityContractService =
-            new SolidityContractService(_aelfClientService, contractAddress, _aelfClientConfigOptions);
-        var selector = _solangAbi.GetSelector("initialize");
-        var parameter = ByteString.CopyFrom(new ABIEncode().GetABIEncoded(Address.FromBase58(address)));
-
+        var contractAddress = Address.FromBase58("2NxwCPAGJr4knVdmwhb1cK7CkZw5sMJkRDLnT7E2GoDP2dy5iZ");
         var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
 
-        var sendTxResult = await _solidityContractService.SendAsync(selector,
-            parameter);
-        sendTxResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+        _testContractStub.SetContractAddressToStub(contractAddress);
+        var executionResult = await _testContractStub.SetManyValueAsync(Scale.TupleType.From(Scale.IntegerType.From(10),
+            Scale.IntegerType.From(100000000)));
+        _testOutputHelper.WriteLine($"SetManyValueAsync tx: {executionResult.TransactionResult.TransactionId}");
+        executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+
         var after = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
-        _testOutputHelper.WriteLine(sendTxResult.TransactionResult.TransactionId.ToHex());
         _testOutputHelper.WriteLine($"{userBalance.Balance}");
         _testOutputHelper.WriteLine($"{after.Balance}");
-        return contractAddress;
+
+        var getValue = await _testContractStub.GetManyValueAsync(Scale.IntegerType.From(1));
+        _testOutputHelper.WriteLine($"{new IntegerTypeDecoder().Decode(getValue)}");
     }
 
     [Fact]
@@ -212,38 +263,27 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
     }
     // 238295970
     // 16260000 + 87999252632986288 + 87999252394690320
-
-    [Fact]
-    public async Task GetAdmin()
-    {
-        var (wasmCode, solangAbi) = await LoadWasmContractCodeAsync(TestContractPath);
-        _solangAbi = solangAbi;
-        var address = "2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd";
-        var contractAddress = Address.FromBase58("2hqsqJndRAZGzk96fsEvyuVBTAvoBjcuwTjkuyJffBPueJFrLa");
-        _solidityContractService =
-            new SolidityContractService(_aelfClientService, contractAddress, _aelfClientConfigOptions);
-        var selector = _solangAbi.GetSelector("getAdmin");
-        var callValue = await _solidityContractService.CallAsync(selector, ByteString.Empty);
-    }
     
         
     [Fact]
     public async Task ChangeAdmin()
     {
-        var (wasmCode, solangAbi) = await LoadWasmContractCodeAsync(TestContractPath);
-        _solangAbi = solangAbi;
         var address = "2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd";
-        var newAdmin = "6fR8YDWrGr1NHRjEMEEzmJnNbsTVuuPnSjAomVYEAXzbNCAdg";
-        var contractAddress = Address.FromBase58("SsSqZWLf7Dk9NWyWyvDwuuY5nzn5n99jiscKZgRPaajZP5p8y");
-        _solidityContractService =
-            new SolidityContractService(_aelfClientService, contractAddress, _aelfClientConfigOptions);
-        var selector = _solangAbi.GetSelector("changeAdmin");
-        var parameter = ByteString.CopyFrom(new ABIEncode().GetABIEncoded(Address.FromBase58(newAdmin)));
+        var newAdmin = "6fR8YDWrGr1NHRjEMEEzmJnNbsTVuuPnSjAomVYEAXzbNCAdg";        
+        var contractAddress = Address.FromBase58("2NxwCPAGJr4knVdmwhb1cK7CkZw5sMJkRDLnT7E2GoDP2dy5iZ");
+        var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
+        _testContractStub.SetContractAddressToStub(contractAddress);
 
-        var sendTxResult = await _solidityContractService.SendAsync(selector,
-            parameter);
-        sendTxResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
-        _testOutputHelper.WriteLine(sendTxResult.TransactionResult.TransactionId.ToHex());
+        var getAdmin = await _testContractStub.GetAdminAsync();
+        _testOutputHelper.WriteLine($"{Address.FromBytes(getAdmin).ToBase58()}");
+        
+        _testContractStub.SetContractAddressToStub(contractAddress);
+        var executionResult = await _testContractStub.ChangeAdminAsync(AddressType.FromBase58(newAdmin));
+        _testOutputHelper.WriteLine($"ChangeAdmin tx: {executionResult.TransactionResult.TransactionId}");
+        executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+
+        getAdmin = await _testContractStub.GetAdminAsync();
+        _testOutputHelper.WriteLine($"{Address.FromBytes(getAdmin).ToBase58()}");
     }
 
     [Fact]
@@ -270,19 +310,130 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
     }
 
     [Fact]
-    public async Task SetManyValue()
+    public async Task ErrorTest()
     {
-        var tokenAddress = "SsSqZWLf7Dk9NWyWyvDwuuY5nzn5n99jiscKZgRPaajZP5p8y";
-        var (wasmCode, solangAbi) = await LoadWasmContractCodeAsync(TestContractPath);
-        _solangAbi = solangAbi;
+        var address = "6fR8YDWrGr1NHRjEMEEzmJnNbsTVuuPnSjAomVYEAXzbNCAdg";
+        var contractAddress = Address.FromBase58("2NxwCPAGJr4knVdmwhb1cK7CkZw5sMJkRDLnT7E2GoDP2dy5iZ");
+        var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
+        _testContractStub.SetContractAddressToStub(contractAddress);
+
+        var getAdmin = await _testContractStub.GetAdminAsync();
+        _testOutputHelper.WriteLine($"{Address.FromBytes(getAdmin).ToBase58()}");
+        
+        _testContractStub.SetContractAddressToStub(contractAddress);
+        var executionResult = await _testContractStub.InitializeAsync(AddressType.FromBase58(address));
+        _testOutputHelper.WriteLine($"SetAdmin tx: {executionResult.TransactionResult.TransactionId}");
+        executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+
+        getAdmin = await _testContractStub.GetAdminAsync();
+        _testOutputHelper.WriteLine($"{Address.FromBytes(getAdmin).ToBase58()}");
+    }
+    
+    [Fact]
+    public async Task StructTest()
+    {
         var address = "2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd";
-        var contractAddress = Address.FromBase58(tokenAddress);
-        _solidityContractService =
-            new SolidityContractService(_aelfClientService, contractAddress, _aelfClientConfigOptions);
-        var selector = _solangAbi.GetSelector("setManyValue");
-        var parameter = ByteString.CopyFrom(new ABIEncode().GetABIEncoded(10, 10));
-        var sendTxResult = await _solidityContractService.SendAsync(selector, parameter);
-        _testOutputHelper.WriteLine(sendTxResult.TransactionResult.TransactionId.ToHex());
-        sendTxResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+        var contractAddress = Address.FromBase58("2nyC8hqq3pGnRu8gJzCsTaxXB6snfGxmL2viimKXgEfYWGtjEh");
+        var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
+        _testContractStub.SetContractAddressToStub(contractAddress);
+
+        var executionResult = await _testContractStub.TestAsync(Scale.TupleType.From(AddressType.FromBase58(address), Scale.IntegerType.From(10)));
+        _testOutputHelper.WriteLine($"SetStruct tx: {executionResult.TransactionResult.TransactionId}");
+        executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+
+        var after = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
+        _testOutputHelper.WriteLine($"{userBalance.Balance}");
+        _testOutputHelper.WriteLine($"{after.Balance}");
+
+        var getTest = await _testContractStub.GetTestAsync(AddressType.FromBase58(address));
+        _testOutputHelper.WriteLine($"{new IntegerTypeDecoder().Decode(getTest)}");
+    }
+    
+    [Fact]
+    public async Task AddTest()
+    {
+        var address = "2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd";
+        var contractAddress = Address.FromBase58("2nyC8hqq3pGnRu8gJzCsTaxXB6snfGxmL2viimKXgEfYWGtjEh");
+        var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
+        _testContractStub.SetContractAddressToStub(contractAddress);
+
+        var executionResult = await _testContractStub.AddAsync(Scale.TupleType.From(Scale.TupleType.From(Scale.IntegerType.From(10)), IntegerType.From(20)));
+        _testOutputHelper.WriteLine($"AddAsync tx: {executionResult.TransactionResult.TransactionId}");
+        executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+
+        var after = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
+        _testOutputHelper.WriteLine($"{userBalance.Balance}");
+        _testOutputHelper.WriteLine($"{after.Balance}");
+        
+        var returnValue = executionResult.TransactionResult.ReturnValue;
+        new IntegerTypeDecoder().Decode(returnValue).ShouldBe(30);
+    }
+    
+        
+    [Fact]
+    public async Task EnumTest()
+    {
+        var address = "2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd";
+        var contractAddress = Address.FromBase58("xsnQafDAhNTeYcooptETqWnYBksFGGXxfcQyJJ5tmu6Ak9ZZt");
+        var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
+        _testContractStub.SetContractAddressToStub(contractAddress);
+        var executionResult = await _testContractStub.ScoreAsync(Scale.TupleType.From());
+        _testOutputHelper.WriteLine($"ScoreAsync tx: {executionResult.TransactionResult.TransactionId}");
+        executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+
+        var after = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
+        _testOutputHelper.WriteLine($"{userBalance.Balance}");
+        _testOutputHelper.WriteLine($"{after.Balance}");
+
+        var getTest = await _testContractStub.GetTestAsync(AddressType.FromBase58(address));
+        _testOutputHelper.WriteLine($"{new IntegerTypeDecoder().Decode(getTest)}");
+    }
+
+    [Fact]
+    public async Task BoolTest()
+    {
+        var address = "2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd";
+        var contractAddress = Address.FromBase58("xsnQafDAhNTeYcooptETqWnYBksFGGXxfcQyJJ5tmu6Ak9ZZt");
+        var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
+        _testContractStub.SetContractAddressToStub(contractAddress);
+        var executionResult = await _testContractStub.SetStatusAsync(Scale.BooleanType.From(true));
+        _testOutputHelper.WriteLine($"SetStatus tx: {executionResult.TransactionResult.TransactionId}");
+        executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+
+        var after = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
+        _testOutputHelper.WriteLine($"{userBalance.Balance}");
+        _testOutputHelper.WriteLine($"{after.Balance}");
+        
+        var getStatus = await _testContractStub.GetStatusAsync();
+        _testOutputHelper.WriteLine($"{new  IntegerTypeDecoder().Decode(getStatus)}");
+        new IntegerTypeDecoder().Decode(getStatus).ShouldBe(1);
+    }
+    
+    [Fact]
+    public async Task GetConstantAsyncTest()
+    {
+        var address = "2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd";
+        var contractAddress = Address.FromBase58("xsnQafDAhNTeYcooptETqWnYBksFGGXxfcQyJJ5tmu6Ak9ZZt");
+        _testContractStub.SetContractAddressToStub(contractAddress);
+
+        var getConstant = await _testContractStub.GetConstantAsync();
+        _testOutputHelper.WriteLine($"{Encoding.UTF8.GetString(getConstant)}");
+    }
+
+    [Fact]
+    public async Task CreateTokenTest()
+    {
+        var address = "2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd";
+        var contractAddress = Address.FromBase58("xsnQafDAhNTeYcooptETqWnYBksFGGXxfcQyJJ5tmu6Ak9ZZt");
+        var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
+        _testContractStub.SetContractAddressToStub(contractAddress);
+        
+        var executionResult = await _testContractStub.CreateTokenAsync(Scale.TupleType.From(Scale.StringType.From("Elf token"),
+            Scale.StringType.From("ELF")));
+        executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+        _testOutputHelper.WriteLine($"CreateToken tx: {executionResult.TransactionResult.TransactionId}");
+        
+        var returnValue = executionResult.TransactionResult.ReturnValue;
+        _testOutputHelper.WriteLine($"{Address.FromBytes(returnValue).ToBase58()}");
     }
 }

@@ -64,11 +64,16 @@ public class SolidityContractService : ContractServiceBase, ISolidityContractSer
         Weight? gasLimit = null, long value = 0)
     {
         var clientAlias = _clientConfigOptions.ClientAlias;
+        if (gasLimit is { RefTime: 0, ProofSize: 0 })
+        {
+            gasLimit = null;
+        }
+        
         var input = new SolidityTransactionParameter
         {
             Parameter = parameter ?? ByteString.Empty,
             Value = value,
-            GasLimit = gasLimit ?? new Weight()
+            GasLimit = gasLimit ?? new Weight { ProofSize = long.MaxValue, RefTime = long.MaxValue }
         };
         var tx = await PerformSendTransactionAsync(selector, input, clientAlias);
         return tx.GetHash().ToHex();
@@ -78,11 +83,15 @@ public class SolidityContractService : ContractServiceBase, ISolidityContractSer
         Weight? gasLimit = null, long value = 0)
     {
         var clientAlias = _clientConfigOptions.ClientAlias;
+        if (gasLimit is { RefTime: 0, ProofSize: 0 })
+        {
+            gasLimit = null;
+        }
         var input = new SolidityTransactionParameter
         {
             Parameter = parameter ?? ByteString.Empty,
             Value = value,
-            GasLimit = gasLimit ?? new Weight()
+            GasLimit = gasLimit ?? new Weight { ProofSize = long.MaxValue, RefTime = long.MaxValue }
         };
         var tx = await GenerateRawTransaction(selector, input, clientAlias, from);
         return tx;

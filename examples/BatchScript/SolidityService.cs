@@ -25,7 +25,7 @@ public interface ISolidityService
     Task Mint();
     Task TransferTokenForFee();
 
-    Task ExecuteBatchTransactionTask(CancellationTokenSource cts,
+    Task ExecuteBatchTransactionTask(string from, CancellationTokenSource cts,
         CancellationToken token);
 }
 
@@ -74,7 +74,7 @@ public class SolidityService : ISingletonDependency, ISolidityService
         var combinedData = From(dataPart1, dataPart2);
         var elf = ByteArrayHelper.HexStringToByteArray("0x0c454c46");
         var elfToken = ByteArrayHelper.HexStringToByteArray("0x24456c6620746f6b656e");
-       
+
         var txResult = await _solidity.SendAsync(selector, ByteString.CopyFrom(elfToken.Concat(elf).ToArray()));
         Logger.LogInformation("Initialize TransactionId: {0}, Status: {1}",
             txResult.TransactionResult.TransactionId.ToHex(), txResult.TransactionResult.Status);
@@ -88,9 +88,10 @@ public class SolidityService : ISingletonDependency, ISolidityService
         // var dataPart1 = ByteString.CopyFrom(Address.FromBase58(account).ToByteArray());
         // var dataPart2 = ByteString.CopyFrom(new IntegerTypeEncoder().Encode(1000000000000000000));
         // var combinedData = From(dataPart1, dataPart2);
-        var combinedData = ByteString.CopyFrom(new ABIEncode().GetABIEncoded(Address.FromBase58(account).ToWebAssemblyAddress(),
+        var combinedData = ByteString.CopyFrom(new ABIEncode().GetABIEncoded(
+            Address.FromBase58(account).ToWebAssemblyAddress(),
             testAmount.ToWebAssemblyUInt256()));
-        
+
         var mintResult = await _solidity.SendAsync(selector, combinedData);
         Logger.LogInformation("Mint TransactionId: {0}, Status: {1}",
             mintResult.TransactionResult.TransactionId.ToHex(), mintResult.TransactionResult.Status);
@@ -103,7 +104,8 @@ public class SolidityService : ISingletonDependency, ISolidityService
             // var dataPart3 = ByteString.CopyFrom(Address.FromBase58(from).ToByteArray());
             // var dataPart4 = ByteString.CopyFrom(new IntegerTypeEncoder().Encode(amount));
             // var combinedData2 = From(dataPart3, dataPart4);           
-            var combinedData2 = ByteString.CopyFrom(new ABIEncode().GetABIEncoded(Address.FromBase58(from).ToWebAssemblyAddress(),
+            var combinedData2 = ByteString.CopyFrom(new ABIEncode().GetABIEncoded(
+                Address.FromBase58(from).ToWebAssemblyAddress(),
                 amount.ToWebAssemblyUInt256()));
 
             var tx = await _solidity.SendAsync(transferSelector, combinedData2);
@@ -137,6 +139,25 @@ public class SolidityService : ISingletonDependency, ISolidityService
         return rawTransactionList;
     }
 
+    private async Task<List<string>> StoreForTest(string from)
+    {
+        var selector = _solangAbi.GetSelector("store");
+
+        var rawTransactionList = new List<string>();
+
+        for (var i = 0; i < 20; i++)
+        {
+            var amount = GenerateRandomNumber(1, int.MaxValue);
+            var parameter = ByteString.CopyFrom(new IntegerTypeEncoder().Encode(amount));
+
+            var requestInfo =
+                await _solidity.GenerateRawTransaction(selector, parameter, from);
+            rawTransactionList.Add(requestInfo);
+        }
+
+        return rawTransactionList;
+    }
+
     public async Task TransferTokenForFee()
     {
         var accountList = _testContractOptions.FromAccountList;
@@ -159,7 +180,7 @@ public class SolidityService : ISingletonDependency, ISolidityService
             Parallel.ForEach(txList, tx => { Logger.LogInformation("Transaction {0}", tx); });
     }
 
-    public async Task ExecuteBatchTransactionTask(CancellationTokenSource cts,
+    public async Task ExecuteBatchTransactionTask(string from, CancellationTokenSource cts,
         CancellationToken token)
     {
         try
@@ -182,7 +203,7 @@ public class SolidityService : ISingletonDependency, ISolidityService
 
                     await Task.Run(() =>
                     {
-                        var rawTransactions = TransferForTest().Result;
+                        var rawTransactions = StoreForTest(from).Result;
                         SendMultiTransaction(rawTransactions).Wait(token);
                     }, token);
 

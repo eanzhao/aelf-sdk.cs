@@ -58,9 +58,9 @@ public class SolidityBatchScriptService : IHostedService
         }
         
         _solidityService = _abpApplication.ServiceProvider.GetRequiredService<ISolidityService>();
-        // await _solidityService.TransferTokenForFee();
-        await _solidityService.Initialize();
-        await _solidityService.Mint();
+        await _solidityService.TransferTokenForFee();
+        // await _solidityService.Initialize();
+        // await _solidityService.Mint();
         ExecuteTransactionsWithoutResultTask();
         
     }
@@ -77,10 +77,12 @@ public class SolidityBatchScriptService : IHostedService
         var txCts = new CancellationTokenSource();
         var txToken = txCts.Token;
         txCts.CancelAfter( _testContractOptions.TestDuration * 1000);
-
-       var task = Task.Run(async () => await _solidityService.ExecuteBatchTransactionTask(txCts, txToken), txToken);
-
-       Task.WhenAll(task);
-        Logger.LogInformation("END");
+        var taskList = _testContractOptions.FromAccountList.Select(i =>
+        {
+            return Task.Run(
+                async () => await _solidityService.ExecuteBatchTransactionTask(i, txCts, txToken), txToken);
+        });
+        Task.WaitAll(taskList.ToArray());
+       Logger.LogInformation("END");
     }
 }
