@@ -356,9 +356,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         var contractAddress = Address.FromBase58("2nyC8hqq3pGnRu8gJzCsTaxXB6snfGxmL2viimKXgEfYWGtjEh");
         _testContractStub.SetContractAddressToStub(contractAddress);
         var result = await _testContractStub.AddAsync(Scale.TupleType.From(Scale.TupleType.From(Scale.IntegerType.From(10)), IntegerType.From(20)));
-        
-        var returnValue = result.TransactionResult.ReturnValue;
-        new IntegerTypeDecoder().Decode(returnValue).ShouldBe(30);
+        new IntegerTypeDecoder().Decode(result).ShouldBe(30);
     }
     
         
@@ -426,6 +424,6 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         _testOutputHelper.WriteLine($"CreateToken tx: {executionResult.TransactionResult.TransactionId}");
         
         var returnValue = executionResult.TransactionResult.ReturnValue;
-        _testOutputHelper.WriteLine($"{Address.FromBytes(returnValue).ToBase58()}");
+        // _testOutputHelper.WriteLine($"{Address.FromBytes(returnValue).ToBase58()}");
     }
 }
