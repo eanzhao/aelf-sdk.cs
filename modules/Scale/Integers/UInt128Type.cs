@@ -1,4 +1,5 @@
 using System.Numerics;
+using AElf;
 using Google.Protobuf;
 
 namespace Scale;
@@ -103,5 +104,17 @@ public class UInt128Type : PrimitiveType<BigInteger>
         var instance = new UInt128Type();
         instance.Create(value);
         return instance;
+    }
+
+    public static UInt128Type From(byte[] value)
+    {
+        var instance = new UInt128Type();
+        instance.Create(value);
+        return instance;
+    }
+
+    public static UInt128Type From(string value)
+    {
+        return From(ByteArrayHelper.HexStringToByteArray(value));
     }
 }

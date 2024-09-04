@@ -1,3 +1,4 @@
+using AElf;
 using Google.Protobuf;
 
 namespace Scale;
@@ -63,5 +64,17 @@ public class UInt64Type : PrimitiveType<ulong>
         var instance = new UInt64Type();
         instance.Create(value);
         return instance;
+    }
+
+    public static UInt64Type From(byte[] value)
+    {
+        var instance = new UInt64Type();
+        instance.Create(value);
+        return instance;
+    }
+
+    public static UInt64Type From(string value)
+    {
+        return From(ByteArrayHelper.HexStringToByteArray(value));
     }
 }

@@ -1,4 +1,5 @@
 using System.Numerics;
+using AElf;
 using Google.Protobuf;
 
 namespace Scale;
@@ -88,5 +89,17 @@ public class Int256Type : PrimitiveType<BigInteger>
         var instance = new Int256Type();
         instance.Create(value);
         return instance;
+    }
+
+    public static Int256Type From(byte[] value)
+    {
+        var instance = new Int256Type();
+        instance.Create(value);
+        return instance;
+    }
+
+    public static Int256Type From(string value)
+    {
+        return From(ByteArrayHelper.HexStringToByteArray(value));
     }
 }

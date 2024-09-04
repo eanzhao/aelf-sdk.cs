@@ -6,7 +6,6 @@ using AutoMapper.Internal;
 using Google.Protobuf;
 using Nethereum.ABI.Decoders;
 using Scale;
-using Scale.Decoders;
 using Shouldly;
 using Xunit.Abstractions;
 
@@ -38,7 +37,7 @@ public class TestContractPipelineTest : TestContractTest
         
         // Call initialize method to set admin
         {
-            var executionResult = await _testContractStub.InitializeAsync(AddressType.FromBase58(TestScriptAddress));
+            var executionResult = await _testContractStub.InitializeAsync(AddressType.GetByteStringFromBase58(TestScriptAddress));
             _testOutputHelper.WriteLine($"initialize tx: {executionResult.TransactionResult.TransactionId}");
             executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
             
@@ -48,7 +47,7 @@ public class TestContractPipelineTest : TestContractTest
         
         // changeAdmin
         {
-            var executionResult = await _testContractStub.ChangeAdminAsync(AddressType.FromBase58(TestScriptAddress));
+            var executionResult = await _testContractStub.ChangeAdminAsync(AddressType.GetByteStringFromBase58(TestScriptAddress));
             _testOutputHelper.WriteLine($"changeAdmin tx: {executionResult.TransactionResult.TransactionId}");
             executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
 
@@ -60,8 +59,11 @@ public class TestContractPipelineTest : TestContractTest
         
         // setManyValue & getManyValue
         {
-            var executionResult = await _testContractStub.SetManyValueAsync(TupleType.GetByteStringFrom(UInt8Type.GetByteStringFrom(10),
-                UInt256Type.GetByteStringFrom(10000000000)));
+            var executionResult = await _testContractStub.SetManyValueAsync(
+                TupleType<UInt8Type, UInt256Type>.GetByteStringFrom(
+                    UInt8Type.From(10),
+                    UInt256Type.From(10000000000)
+                ));
             _testOutputHelper.WriteLine($"setManyValue tx: {executionResult.TransactionResult.TransactionId}");
             executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
             
@@ -89,9 +91,30 @@ public class TestContractPipelineTest : TestContractTest
             }.Encode()));
             _testOutputHelper.WriteLine($"score tx: {executionResult.TransactionResult.TransactionId}");
             executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
-            var score = new UInt32Type();
-            score.Create(executionResult.TransactionResult.ReturnValue.ToByteArray());
-            score.Value.ShouldBe(14u);
+            UInt32Type.From(executionResult.TransactionResult.ReturnValue.ToByteArray()).Value.ShouldBe(14u);
+        }
+    }
+
+    [Fact]
+    public async Task TypesTest()
+    {
+        await _testContractStub.DeployAsync();
+
+        // compareBytes
+        {
+            var executionResult = await _testContractStub.CompareBytesAsync(TupleType<BytesType, BytesType>.GetByteStringFrom(
+                BytesType.From("0x12345678"),
+                BytesType.From("0x12345678")));
+            BoolType.From(executionResult).Value.ShouldBeTrue();
+        }
+        
+        // concatenate
+        {
+            var executionResult = await _testContractStub.ConcatenateAsync(TupleType<BytesType, BytesType>.GetByteStringFrom(
+                BytesType.From("0x12345678"),
+                BytesType.From("0x12345678")));
+            BytesType.From(executionResult).TypeSize.ShouldBe(8);
+            BytesType.From(executionResult).Value.ToHex(true).ShouldBe("0x1234567812345678");
         }
     }
 
@@ -99,7 +122,7 @@ public class TestContractPipelineTest : TestContractTest
     public async Task TokenRelatedPipeline()
     {
         var contractAddress = await _testContractStub.DeployAsync();
-        await _testContractStub.InitializeAsync(AddressType.FromBase58(TestScriptAddress));
+        await _testContractStub.InitializeAsync(AddressType.GetByteStringFromBase58(TestScriptAddress));
 
         // Upload MockToken Contract before calling createToken
         {
@@ -115,8 +138,10 @@ public class TestContractPipelineTest : TestContractTest
 
         // createToken
         {
-            var executionResult = await _testContractStub.CreateTokenAsync(TupleType.GetByteStringFrom(StringType.GetByteStringFrom("Elf token"),
-                StringType.GetByteStringFrom("ELF")));
+            var executionResult = await _testContractStub.CreateTokenAsync(
+                TupleType<StringType, StringType>.GetByteStringFrom(
+                    StringType.From("Elf token"),
+                    StringType.From("ELF")));
             executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
             _testOutputHelper.WriteLine($"createToken tx: {executionResult.TransactionResult.TransactionId}");
             _testOutputHelper.WriteLine($"createToken tx result: {executionResult.TransactionResult}");

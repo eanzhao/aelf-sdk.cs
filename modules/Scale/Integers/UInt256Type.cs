@@ -1,4 +1,5 @@
 using System.Numerics;
+using AElf;
 using Google.Protobuf;
 
 namespace Scale;
@@ -44,7 +45,7 @@ public class UInt256Type : PrimitiveType<BigInteger>
         }
         else
         {
-            throw new NotSupportedException("Exceeded the max size for uint128.");
+            throw new NotSupportedException("Exceeded the max size for uint256.");
         }
 
         Bytes = value;
@@ -110,5 +111,17 @@ public class UInt256Type : PrimitiveType<BigInteger>
         var instance = new UInt256Type();
         instance.Create(value);
         return instance;
+    }
+
+    public static UInt256Type From(byte[] value)
+    {
+        var instance = new UInt256Type();
+        instance.Create(value);
+        return instance;
+    }
+
+    public static UInt256Type From(string value)
+    {
+        return From(ByteArrayHelper.HexStringToByteArray(value));
     }
 }

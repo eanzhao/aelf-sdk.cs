@@ -9,7 +9,7 @@ namespace Scale;
 /// </summary>
 public class AddressType
 {
-    public static ByteString FromBase58(string address)
+    public static ByteString GetByteStringFromBase58(string address)
     {
         return ByteString.CopyFrom(GetBytesFromBase58(address));
     }

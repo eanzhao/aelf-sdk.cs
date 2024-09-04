@@ -1,3 +1,4 @@
+using AElf;
 using Google.Protobuf;
 
 namespace Scale;
@@ -63,5 +64,17 @@ public class UInt16Type : PrimitiveType<ushort>
         var instance = new UInt16Type();
         instance.Create(value);
         return instance;
+    }
+
+    public static UInt16Type From(byte[] value)
+    {
+        var instance = new UInt16Type();
+        instance.Create(value);
+        return instance;
+    }
+
+    public static UInt16Type From(string value)
+    {
+        return From(ByteArrayHelper.HexStringToByteArray(value));
     }
 }

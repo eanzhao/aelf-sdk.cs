@@ -105,11 +105,11 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
     {
         var contractAddress = await InitializeMockTokenContract();
         var executionResult = await _mockTokenStub.MintAsync(Scale.TupleType.GetByteStringFrom(
-            AddressType.FromBase58("2ceeqZ7iNTLXfzkmNzXCiPYiZTbkRAxH48FS7rBCX5qFtptajP"),
+            AddressType.GetByteStringFromBase58("2ceeqZ7iNTLXfzkmNzXCiPYiZTbkRAxH48FS7rBCX5qFtptajP"),
                 UInt256Type.GetByteStringFrom(100000000)));
         _testOutputHelper.WriteLine($"mint tx: {executionResult.TransactionResult.TransactionId}");
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
-        var balance = await _mockTokenStub.BalanceOfAsync(AddressType.FromBase58("2ceeqZ7iNTLXfzkmNzXCiPYiZTbkRAxH48FS7rBCX5qFtptajP"));
+        var balance = await _mockTokenStub.BalanceOfAsync(AddressType.GetByteStringFromBase58("2ceeqZ7iNTLXfzkmNzXCiPYiZTbkRAxH48FS7rBCX5qFtptajP"));
         ((long)new IntegerTypeDecoder().Decode(balance)).ShouldBePositive();
         return contractAddress;
     }
@@ -122,12 +122,12 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         {
             var balance =
                 await _mockTokenStub.BalanceOfAsync(
-                    AddressType.FromBase58("2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd"));
+                    AddressType.GetByteStringFromBase58("2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd"));
             new IntegerTypeDecoder().Decode(balance).ShouldBe(0);
         }
 
         var executionResult = await _mockTokenStub.TransferAsync(Scale.TupleType.GetByteStringFrom(
-            AddressType.FromBase58("2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd"),
+            AddressType.GetByteStringFromBase58("2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd"),
             UInt256Type.GetByteStringFrom(100000000)));
         _testOutputHelper.WriteLine($"transfer tx: {executionResult.TransactionResult.TransactionId}");
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
@@ -135,7 +135,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         {
             var balance =
                 await _mockTokenStub.BalanceOfAsync(
-                    AddressType.FromBase58("2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd"));
+                    AddressType.GetByteStringFromBase58("2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd"));
             new IntegerTypeDecoder().Decode(balance).ShouldBe(100000000);
         }
     }
@@ -193,7 +193,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
         
         _testContractStub.SetContractAddressToStub(contractAddress);
-        var executionResult = await _testContractStub.InitializeAsync(AddressType.FromBase58(address));
+        var executionResult = await _testContractStub.InitializeAsync(AddressType.GetByteStringFromBase58(address));
         _testOutputHelper.WriteLine($"SetAdmin tx: {executionResult.TransactionResult.TransactionId}");
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
 
@@ -277,7 +277,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         _testOutputHelper.WriteLine($"{Address.FromBytes(getAdmin).ToBase58()}");
         
         _testContractStub.SetContractAddressToStub(contractAddress);
-        var executionResult = await _testContractStub.ChangeAdminAsync(AddressType.FromBase58(newAdmin));
+        var executionResult = await _testContractStub.ChangeAdminAsync(AddressType.GetByteStringFromBase58(newAdmin));
         _testOutputHelper.WriteLine($"ChangeAdmin tx: {executionResult.TransactionResult.TransactionId}");
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
 
@@ -320,7 +320,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         _testOutputHelper.WriteLine($"{Address.FromBytes(getAdmin).ToBase58()}");
         
         _testContractStub.SetContractAddressToStub(contractAddress);
-        var executionResult = await _testContractStub.InitializeAsync(AddressType.FromBase58(address));
+        var executionResult = await _testContractStub.InitializeAsync(AddressType.GetByteStringFromBase58(address));
         _testOutputHelper.WriteLine($"SetAdmin tx: {executionResult.TransactionResult.TransactionId}");
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
 
@@ -336,7 +336,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
         _testContractStub.SetContractAddressToStub(contractAddress);
 
-        var executionResult = await _testContractStub.TestAsync(Scale.TupleType.GetByteStringFrom(AddressType.FromBase58(address), UInt256Type.GetByteStringFrom(10)));
+        var executionResult = await _testContractStub.TestAsync(Scale.TupleType.GetByteStringFrom(AddressType.GetByteStringFromBase58(address), UInt256Type.GetByteStringFrom(10)));
         _testOutputHelper.WriteLine($"SetStruct tx: {executionResult.TransactionResult.TransactionId}");
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
 
@@ -344,7 +344,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         _testOutputHelper.WriteLine($"{userBalance.Balance}");
         _testOutputHelper.WriteLine($"{after.Balance}");
 
-        var getTest = await _testContractStub.GetTestAsync(AddressType.FromBase58(address));
+        var getTest = await _testContractStub.GetTestAsync(AddressType.GetByteStringFromBase58(address));
         _testOutputHelper.WriteLine($"{new IntegerTypeDecoder().Decode(getTest)}");
     }
     
@@ -373,7 +373,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         _testOutputHelper.WriteLine($"{userBalance.Balance}");
         _testOutputHelper.WriteLine($"{after.Balance}");
 
-        var getTest = await _testContractStub.GetTestAsync(AddressType.FromBase58(address));
+        var getTest = await _testContractStub.GetTestAsync(AddressType.GetByteStringFromBase58(address));
         _testOutputHelper.WriteLine($"{new IntegerTypeDecoder().Decode(getTest)}");
     }
 

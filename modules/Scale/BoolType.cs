@@ -8,7 +8,11 @@ public class BoolType : PrimitiveType<bool>
     public override string TypeName => "bool";
 
     public override int TypeSize => 1;
-    
+
+    public BoolType()
+    {
+    }
+
     public BoolType(bool value)
     {
         Create(value);
@@ -46,5 +50,26 @@ public class BoolType : PrimitiveType<bool>
     {
         Bytes = GetBytesFrom(value);
         Value = value;
+    }
+
+    public static BoolType From(bool value)
+    {
+        var instance = new BoolType();
+        instance.Create(value);
+        return instance;
+    }
+
+    public static BoolType From(byte[] value)
+    {
+        var instance = new BoolType();
+        instance.Create(value);
+        return instance;
+    }
+
+    public static BoolType From(string value)
+    {
+        var instance = new BoolType();
+        instance.Create(value);
+        return instance;
     }
 }

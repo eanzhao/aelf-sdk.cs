@@ -1,3 +1,4 @@
+using AElf;
 using Google.Protobuf;
 
 namespace Scale;
@@ -63,5 +64,17 @@ public class UInt32Type : PrimitiveType<uint>
         var instance = new UInt32Type();
         instance.Create(value);
         return instance;
+    }
+
+    public static UInt32Type From(byte[] value)
+    {
+        var instance = new UInt32Type();
+        instance.Create(value);
+        return instance;
+    }
+
+    public static UInt32Type From(string value)
+    {
+        return From(ByteArrayHelper.HexStringToByteArray(value));
     }
 }

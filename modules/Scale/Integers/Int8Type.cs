@@ -1,3 +1,4 @@
+using AElf;
 using Google.Protobuf;
 
 namespace Scale;
@@ -49,5 +50,17 @@ public class Int8Type : PrimitiveType<sbyte>
         var instance = new Int8Type();
         instance.Create(value);
         return instance;
+    }
+
+    public static Int8Type From(byte[] value)
+    {
+        var instance = new Int8Type();
+        instance.Create(value);
+        return instance;
+    }
+
+    public static Int8Type From(string value)
+    {
+        return From(ByteArrayHelper.HexStringToByteArray(value));
     }
 }

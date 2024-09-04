@@ -1,8 +1,11 @@
+using Google.Protobuf;
+
 namespace Scale;
 
 public abstract class PrimitiveType<T> : BaseType
 {
     public T Value { get; set; }
+    public ByteString ByteStringValue => ByteString.CopyFrom(Bytes);
 
     public abstract void Create(T value);
 
