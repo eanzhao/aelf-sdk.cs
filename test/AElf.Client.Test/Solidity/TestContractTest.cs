@@ -71,8 +71,8 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
     {
         var balance = await _tokenService.GetTokenBalanceAsync("ELF", Address.FromBase58("2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd"));
         var contractAddress = await DeployMockTokenContract();
-        var executionResult = await _mockTokenStub.InitializeAsync(Scale.TupleType.From(Scale.StringType.From("Elf token"),
-            Scale.StringType.From("ELF")));
+        var executionResult = await _mockTokenStub.InitializeAsync(Scale.TupleType.GetByteStringFrom(Scale.StringType.GetByteStringFrom("Elf token"),
+            Scale.StringType.GetByteStringFrom("ELF")));
         _testOutputHelper.WriteLine(executionResult.TransactionResult.TransactionId.ToHex());
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
         var afterBalance = await _tokenService.GetTokenBalanceAsync("ELF", Address.FromBase58("2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd"));
@@ -90,8 +90,8 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
     {
         var contractAddress = Address.FromBase58("2LUmicHyH4RXrMjG4beDwuDsiWJESyLkgkwPdGTR8kahRzq5XS");
         _mockTokenStub.SetContractAddressToStub(contractAddress);
-        var executionResult = await _mockTokenStub.InitializeAsync(Scale.TupleType.From(Scale.StringType.From("Elf token"),
-            Scale.StringType.From("ELF")));
+        var executionResult = await _mockTokenStub.InitializeAsync(Scale.TupleType.GetByteStringFrom(Scale.StringType.GetByteStringFrom("Elf token"),
+            Scale.StringType.GetByteStringFrom("ELF")));
         _testOutputHelper.WriteLine($"initialize tx: {executionResult.TransactionResult.TransactionId}");
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
         var name = await _mockTokenStub.NameAsync();
@@ -104,9 +104,9 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
     public async Task<Address> MintTest()
     {
         var contractAddress = await InitializeMockTokenContract();
-        var executionResult = await _mockTokenStub.MintAsync(Scale.TupleType.From(
+        var executionResult = await _mockTokenStub.MintAsync(Scale.TupleType.GetByteStringFrom(
             AddressType.FromBase58("2ceeqZ7iNTLXfzkmNzXCiPYiZTbkRAxH48FS7rBCX5qFtptajP"),
-                UInt256Type.From(100000000)));
+                UInt256Type.GetByteStringFrom(100000000)));
         _testOutputHelper.WriteLine($"mint tx: {executionResult.TransactionResult.TransactionId}");
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
         var balance = await _mockTokenStub.BalanceOfAsync(AddressType.FromBase58("2ceeqZ7iNTLXfzkmNzXCiPYiZTbkRAxH48FS7rBCX5qFtptajP"));
@@ -126,9 +126,9 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
             new IntegerTypeDecoder().Decode(balance).ShouldBe(0);
         }
 
-        var executionResult = await _mockTokenStub.TransferAsync(Scale.TupleType.From(
+        var executionResult = await _mockTokenStub.TransferAsync(Scale.TupleType.GetByteStringFrom(
             AddressType.FromBase58("2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd"),
-            UInt256Type.From(100000000)));
+            UInt256Type.GetByteStringFrom(100000000)));
         _testOutputHelper.WriteLine($"transfer tx: {executionResult.TransactionResult.TransactionId}");
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
 
@@ -215,8 +215,8 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
 
         _testContractStub.SetContractAddressToStub(contractAddress);
-        var executionResult = await _testContractStub.SetManyValueAsync(Scale.TupleType.From(UInt8Type.From(10),
-            UInt256Type.From(100000000)));
+        var executionResult = await _testContractStub.SetManyValueAsync(Scale.TupleType.GetByteStringFrom(UInt8Type.GetByteStringFrom(10),
+            UInt256Type.GetByteStringFrom(100000000)));
         _testOutputHelper.WriteLine($"SetManyValueAsync tx: {executionResult.TransactionResult.TransactionId}");
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
 
@@ -224,7 +224,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         _testOutputHelper.WriteLine($"{userBalance.Balance}");
         _testOutputHelper.WriteLine($"{after.Balance}");
 
-        var getValue = await _testContractStub.GetManyValueAsync(UInt8Type.From(1));
+        var getValue = await _testContractStub.GetManyValueAsync(UInt8Type.GetByteStringFrom(1));
         _testOutputHelper.WriteLine($"{new IntegerTypeDecoder().Decode(getValue)}");
     }
 
@@ -336,7 +336,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
         _testContractStub.SetContractAddressToStub(contractAddress);
 
-        var executionResult = await _testContractStub.TestAsync(Scale.TupleType.From(AddressType.FromBase58(address), UInt256Type.From(10)));
+        var executionResult = await _testContractStub.TestAsync(Scale.TupleType.GetByteStringFrom(AddressType.FromBase58(address), UInt256Type.GetByteStringFrom(10)));
         _testOutputHelper.WriteLine($"SetStruct tx: {executionResult.TransactionResult.TransactionId}");
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
 
@@ -354,7 +354,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         var address = "2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd";
         var contractAddress = Address.FromBase58("2nyC8hqq3pGnRu8gJzCsTaxXB6snfGxmL2viimKXgEfYWGtjEh");
         _testContractStub.SetContractAddressToStub(contractAddress);
-        var result = await _testContractStub.AddAsync(Scale.TupleType.From(Scale.TupleType.From(UInt256Type.From(10)), UInt256Type.From(20)));
+        var result = await _testContractStub.AddAsync(Scale.TupleType.GetByteStringFrom(Scale.TupleType.GetByteStringFrom(UInt256Type.GetByteStringFrom(10)), UInt256Type.GetByteStringFrom(20)));
         new IntegerTypeDecoder().Decode(result).ShouldBe(30);
     }
 
@@ -365,7 +365,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         var contractAddress = Address.FromBase58("xsnQafDAhNTeYcooptETqWnYBksFGGXxfcQyJJ5tmu6Ak9ZZt");
         var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
         _testContractStub.SetContractAddressToStub(contractAddress);
-        var executionResult = await _testContractStub.ScoreAsync(Scale.TupleType.From());
+        var executionResult = await _testContractStub.ScoreAsync(Scale.TupleType.GetByteStringFrom());
         _testOutputHelper.WriteLine($"ScoreAsync tx: {executionResult.TransactionResult.TransactionId}");
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
 
@@ -384,7 +384,7 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         var contractAddress = Address.FromBase58("xsnQafDAhNTeYcooptETqWnYBksFGGXxfcQyJJ5tmu6Ak9ZZt");
         var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
         _testContractStub.SetContractAddressToStub(contractAddress);
-        var executionResult = await _testContractStub.SetStatusAsync(Scale.BoolType.From(true));
+        var executionResult = await _testContractStub.SetStatusAsync(Scale.BoolType.GetByteStringFrom(true));
         _testOutputHelper.WriteLine($"SetStatus tx: {executionResult.TransactionResult.TransactionId}");
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
 
@@ -416,8 +416,8 @@ public class TestContractTest : AElfClientAbpContractServiceTestBase
         var userBalance = await _tokenService.GetTokenBalanceAsync("ELF",Address.FromBase58(address));
         _testContractStub.SetContractAddressToStub(contractAddress);
         
-        var executionResult = await _testContractStub.CreateTokenAsync(Scale.TupleType.From(Scale.StringType.From("Elf token"),
-            Scale.StringType.From("ELF")));
+        var executionResult = await _testContractStub.CreateTokenAsync(Scale.TupleType.GetByteStringFrom(Scale.StringType.GetByteStringFrom("Elf token"),
+            Scale.StringType.GetByteStringFrom("ELF")));
         executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
         _testOutputHelper.WriteLine($"CreateToken tx: {executionResult.TransactionResult.TransactionId}");
         

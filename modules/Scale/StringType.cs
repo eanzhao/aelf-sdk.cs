@@ -6,7 +6,7 @@ namespace Scale;
 public class StringType : PrimitiveType<string>
 {
     public override string TypeName => "string";
-    
+
     public static explicit operator StringType(string p) => new(p);
     public static implicit operator string(StringType p) => p.Value;
 
@@ -53,8 +53,8 @@ public class StringType : PrimitiveType<string>
         Bytes = GetBytesFrom(value);
         TypeSize = Bytes.Length;
     }
-    
-    public static ByteString From(string value)
+
+    public static ByteString GetByteStringFrom(string value)
     {
         return ByteString.CopyFrom(GetBytesFrom(value));
     }
@@ -66,5 +66,12 @@ public class StringType : PrimitiveType<string>
         result.AddRange(new CompactIntegerType(list.Count).Encode());
         result.AddRange(list);
         return result.ToArray();
+    }
+
+    public static StringType From(string value)
+    {
+        var instance = new StringType();
+        instance.Create(value);
+        return instance;
     }
 }

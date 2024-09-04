@@ -60,19 +60,19 @@ public class TestContractPipelineTest : TestContractTest
         
         // setManyValue & getManyValue
         {
-            var executionResult = await _testContractStub.SetManyValueAsync(TupleType.From(UInt8Type.From(10),
-                UInt256Type.From(10000000000)));
+            var executionResult = await _testContractStub.SetManyValueAsync(TupleType.GetByteStringFrom(UInt8Type.GetByteStringFrom(10),
+                UInt256Type.GetByteStringFrom(10000000000)));
             _testOutputHelper.WriteLine($"setManyValue tx: {executionResult.TransactionResult.TransactionId}");
             executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
             
-            var value = await _testContractStub.GetManyValueAsync(UInt8Type.From(01));
+            var value = await _testContractStub.GetManyValueAsync(UInt8Type.GetByteStringFrom(01));
             UInt256Type.FromBytes(value).Value.ShouldBe(10000000001);
             _testOutputHelper.WriteLine($"getManyValue: {UInt256Type.FromBytes(value).Value}");
         }
         
         // setStatus & getStatus
         {
-            var executionResult = await _testContractStub.SetStatusAsync(BoolType.From(true));
+            var executionResult = await _testContractStub.SetStatusAsync(BoolType.GetByteStringFrom(true));
             _testOutputHelper.WriteLine($"setStatus tx: {executionResult.TransactionResult.TransactionId}");
             executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
             
@@ -115,8 +115,8 @@ public class TestContractPipelineTest : TestContractTest
 
         // createToken
         {
-            var executionResult = await _testContractStub.CreateTokenAsync(TupleType.From(StringType.From("Elf token"),
-                StringType.From("ELF")));
+            var executionResult = await _testContractStub.CreateTokenAsync(TupleType.GetByteStringFrom(StringType.GetByteStringFrom("Elf token"),
+                StringType.GetByteStringFrom("ELF")));
             executionResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
             _testOutputHelper.WriteLine($"createToken tx: {executionResult.TransactionResult.TransactionId}");
             _testOutputHelper.WriteLine($"createToken tx result: {executionResult.TransactionResult}");

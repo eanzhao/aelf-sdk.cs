@@ -12,7 +12,7 @@ public class Int256Type : PrimitiveType<BigInteger>
     public static explicit operator Int256Type(BigInteger v) => new(v);
 
     public static implicit operator BigInteger(Int256Type v) => v.Value;
-    public static implicit operator ByteString(Int256Type v) => From(v.Value);
+    public static implicit operator ByteString(Int256Type v) => GetByteStringFrom(v.Value);
 
     public Int256Type()
     {
@@ -53,12 +53,12 @@ public class Int256Type : PrimitiveType<BigInteger>
         Value = value;
     }
 
-    public static ByteString From(long value)
+    public static ByteString GetByteStringFrom(long value)
     {
         return ByteString.CopyFrom(GetBytesFrom(value));
     }
-    
-    public static ByteString From(BigInteger value)
+
+    public static ByteString GetByteStringFrom(BigInteger value)
     {
         return ByteString.CopyFrom(GetBytesFrom(value));
     }
@@ -81,5 +81,12 @@ public class Int256Type : PrimitiveType<BigInteger>
         var bytes = new byte[32];
         byteArray.CopyTo(bytes, 0);
         return bytes;
+    }
+
+    public static Int256Type From(BigInteger value)
+    {
+        var instance = new Int256Type();
+        instance.Create(value);
+        return instance;
     }
 }

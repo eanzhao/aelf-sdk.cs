@@ -11,7 +11,7 @@ public class Int8Type : PrimitiveType<sbyte>
     public static explicit operator Int8Type(sbyte v) => new(v);
 
     public static implicit operator sbyte(Int8Type v) => v.Value;
-    public static implicit operator ByteString(Int8Type v) => From(v.Value);
+    public static implicit operator ByteString(Int8Type v) => GetByteStringFrom(v.Value);
 
     public Int8Type()
     {
@@ -39,8 +39,15 @@ public class Int8Type : PrimitiveType<sbyte>
         Value = value;
     }
 
-    public static ByteString From(sbyte value)
+    public static ByteString GetByteStringFrom(sbyte value)
     {
         return ByteString.CopyFrom((byte)value);
+    }
+
+    public static Int8Type From(sbyte value)
+    {
+        var instance = new Int8Type();
+        instance.Create(value);
+        return instance;
     }
 }

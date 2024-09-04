@@ -11,7 +11,7 @@ public class Int32Type : PrimitiveType<int>
     public static explicit operator Int32Type(int v) => new(v);
 
     public static implicit operator int(Int32Type v) => v.Value;
-    public static implicit operator ByteString(Int32Type v) => From(v.Value);
+    public static implicit operator ByteString(Int32Type v) => GetByteStringFrom(v.Value);
 
     public Int32Type()
     {
@@ -46,7 +46,7 @@ public class Int32Type : PrimitiveType<int>
         Value = value;
     }
 
-    public static ByteString From(int value)
+    public static ByteString GetByteStringFrom(int value)
     {
         return ByteString.CopyFrom(GetBytesFrom(value));
     }
@@ -56,5 +56,12 @@ public class Int32Type : PrimitiveType<int>
         var bytes = new byte[4];
         BitConverter.GetBytes(value).CopyTo(bytes, 0);
         return bytes;
+    }
+
+    public static Int32Type From(int value)
+    {
+        var instance = new Int32Type();
+        instance.Create(value);
+        return instance;
     }
 }

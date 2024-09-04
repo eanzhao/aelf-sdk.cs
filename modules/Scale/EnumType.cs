@@ -8,9 +8,9 @@ public class EnumType<T> : PrimitiveType<T> where T : Enum
     public override string TypeName => typeof(T).Name;
 
     public override int TypeSize => 1;
-    
+
     public static explicit operator EnumType<T>(T p) => new(p);
-    
+
     public static implicit operator T(EnumType<T> p) => p.Value;
 
     public EnumType()
@@ -51,14 +51,21 @@ public class EnumType<T> : PrimitiveType<T> where T : Enum
         Bytes = value;
         Value = (T)Enum.Parse(typeof(T), value[0].ToString(), true);
     }
-    
-    public static ByteString From(T value)
+
+    public static ByteString GetByteStringFrom(T value)
     {
         return ByteString.CopyFrom(GetBytesFrom(value));
     }
-    
+
     public static byte[] GetBytesFrom(T value)
     {
         return [Convert.ToByte(value)];
+    }
+
+    public static T From(T value)
+    {
+        var instance = new EnumType<T>();
+        instance.Create(value);
+        return instance.Value;
     }
 }

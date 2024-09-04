@@ -11,7 +11,7 @@ public class Int64Type : PrimitiveType<long>
     public static explicit operator Int64Type(long v) => new(v);
 
     public static implicit operator long(Int64Type v) => v.Value;
-    public static implicit operator ByteString(Int64Type v) => From(v.Value);
+    public static implicit operator ByteString(Int64Type v) => GetByteStringFrom(v.Value);
 
     public Int64Type()
     {
@@ -46,7 +46,7 @@ public class Int64Type : PrimitiveType<long>
         Value = value;
     }
 
-    public static ByteString From(long value)
+    public static ByteString GetByteStringFrom(long value)
     {
         return ByteString.CopyFrom(GetBytesFrom(value));
     }
@@ -56,5 +56,12 @@ public class Int64Type : PrimitiveType<long>
         var bytes = new byte[8];
         BitConverter.GetBytes(value).CopyTo(bytes, 0);
         return bytes;
+    }
+
+    public static Int64Type From(long value)
+    {
+        var instance = new Int64Type();
+        instance.Create(value);
+        return instance;
     }
 }

@@ -2,7 +2,7 @@ using Google.Protobuf;
 
 namespace Scale;
 
-public class UInt64Type: PrimitiveType<ulong>
+public class UInt64Type : PrimitiveType<ulong>
 {
     public override string TypeName => "uint64";
 
@@ -11,7 +11,7 @@ public class UInt64Type: PrimitiveType<ulong>
     public static explicit operator UInt64Type(ulong v) => new(v);
 
     public static implicit operator ulong(UInt64Type v) => v.Value;
-    public static implicit operator ByteString(UInt64Type v) => From(v.Value);
+    public static implicit operator ByteString(UInt64Type v) => GetByteStringFrom(v.Value);
 
     public UInt64Type()
     {
@@ -46,7 +46,7 @@ public class UInt64Type: PrimitiveType<ulong>
         Value = value;
     }
 
-    public static ByteString From(ulong value)
+    public static ByteString GetByteStringFrom(ulong value)
     {
         return ByteString.CopyFrom(GetBytesFrom(value));
     }
@@ -56,5 +56,12 @@ public class UInt64Type: PrimitiveType<ulong>
         var bytes = new byte[8];
         BitConverter.GetBytes(value).CopyTo(bytes, 0);
         return bytes;
+    }
+
+    public static UInt64Type From(ulong value)
+    {
+        var instance = new UInt64Type();
+        instance.Create(value);
+        return instance;
     }
 }

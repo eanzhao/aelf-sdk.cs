@@ -11,7 +11,7 @@ public class UInt16Type : PrimitiveType<ushort>
     public static explicit operator UInt16Type(ushort v) => new(v);
 
     public static implicit operator ushort(UInt16Type v) => v.Value;
-    public static implicit operator ByteString(UInt16Type v) => From(v.Value);
+    public static implicit operator ByteString(UInt16Type v) => GetByteStringFrom(v.Value);
 
     public UInt16Type()
     {
@@ -46,7 +46,7 @@ public class UInt16Type : PrimitiveType<ushort>
         Value = value;
     }
 
-    public static ByteString From(ushort value)
+    public static ByteString GetByteStringFrom(ushort value)
     {
         return ByteString.CopyFrom(GetBytesFrom(value));
     }
@@ -56,5 +56,12 @@ public class UInt16Type : PrimitiveType<ushort>
         var bytes = new byte[2];
         BitConverter.GetBytes(value).CopyTo(bytes, 0);
         return bytes;
+    }
+
+    public static UInt16Type From(ushort value)
+    {
+        var instance = new UInt16Type();
+        instance.Create(value);
+        return instance;
     }
 }

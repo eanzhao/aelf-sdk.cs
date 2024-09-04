@@ -12,7 +12,7 @@ public class UInt128Type : PrimitiveType<BigInteger>
     public static explicit operator UInt128Type(BigInteger v) => new(v);
 
     public static implicit operator BigInteger(UInt128Type v) => v.Value;
-    public static implicit operator ByteString(UInt128Type v) => From(v.Value);
+    public static implicit operator ByteString(UInt128Type v) => GetByteStringFrom(v.Value);
 
     public UInt128Type()
     {
@@ -63,12 +63,12 @@ public class UInt128Type : PrimitiveType<BigInteger>
         Value = value;
     }
 
-    public static ByteString From(ulong value)
+    public static ByteString GetByteStringFrom(ulong value)
     {
         return ByteString.CopyFrom(GetBytesFrom(value));
     }
 
-    public static ByteString From(BigInteger value)
+    public static ByteString GetByteStringFrom(BigInteger value)
     {
         return ByteString.CopyFrom(GetBytesFrom(value));
     }
@@ -96,5 +96,12 @@ public class UInt128Type : PrimitiveType<BigInteger>
         var bytes = new byte[16];
         byteArray.CopyTo(bytes, 0);
         return bytes;
+    }
+
+    public static UInt128Type From(BigInteger value)
+    {
+        var instance = new UInt128Type();
+        instance.Create(value);
+        return instance;
     }
 }

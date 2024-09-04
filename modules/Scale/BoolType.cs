@@ -16,12 +16,12 @@ public class BoolType : PrimitiveType<bool>
 
     public static explicit operator BoolType(bool v) => new(v);
 
-    public static implicit operator ByteString(BoolType v) => From(v.Value);
+    public static implicit operator ByteString(BoolType v) => GetByteStringFrom(v.Value);
 
     public static ByteString True => ByteString.CopyFrom(0x01);
     public static ByteString False => ByteString.CopyFrom(0x00);
 
-    public static ByteString From(bool value)
+    public static ByteString GetByteStringFrom(bool value)
     {
         return value ? True : False;
     }

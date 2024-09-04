@@ -2,7 +2,7 @@ using Google.Protobuf;
 
 namespace Scale;
 
-public class UInt32Type: PrimitiveType<uint>
+public class UInt32Type : PrimitiveType<uint>
 {
     public override string TypeName => "uint32";
 
@@ -11,7 +11,7 @@ public class UInt32Type: PrimitiveType<uint>
     public static explicit operator UInt32Type(uint v) => new(v);
 
     public static implicit operator uint(UInt32Type v) => v.Value;
-    public static implicit operator ByteString(UInt32Type v) => From(v.Value);
+    public static implicit operator ByteString(UInt32Type v) => GetByteStringFrom(v.Value);
 
     public UInt32Type()
     {
@@ -46,7 +46,7 @@ public class UInt32Type: PrimitiveType<uint>
         Value = value;
     }
 
-    public static ByteString From(uint value)
+    public static ByteString GetByteStringFrom(uint value)
     {
         return ByteString.CopyFrom(GetBytesFrom(value));
     }
@@ -56,5 +56,12 @@ public class UInt32Type: PrimitiveType<uint>
         var bytes = new byte[4];
         BitConverter.GetBytes(value).CopyTo(bytes, 0);
         return bytes;
+    }
+
+    public static UInt32Type From(uint value)
+    {
+        var instance = new UInt32Type();
+        instance.Create(value);
+        return instance;
     }
 }

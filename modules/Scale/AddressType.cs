@@ -14,7 +14,7 @@ public class AddressType
         return ByteString.CopyFrom(GetBytesFromBase58(address));
     }
 
-    public static ByteString From(Address address)
+    public static ByteString GetByteStringFrom(Address address)
     {
         return address.ToByteString();
     }

@@ -1,4 +1,5 @@
 using System.Text;
+using Google.Protobuf;
 
 namespace Scale;
 
@@ -33,7 +34,24 @@ public class CharType : PrimitiveType<char>
 
     public override void Create(char value)
     {
-        Bytes = Encoding.UTF8.GetBytes(value.ToString());
+        Bytes = GetBytesFrom(value);
         Value = value;
+    }
+
+    public static ByteString GetByteStringFrom(char value)
+    {
+        return ByteString.CopyFrom(GetBytesFrom(value));
+    }
+
+    public static byte[] GetBytesFrom(char value)
+    {
+        return Encoding.UTF8.GetBytes(value.ToString());
+    }
+
+    public static CharType From(char value)
+    {
+        var instance = new CharType();
+        instance.Create(value);
+        return instance;
     }
 }

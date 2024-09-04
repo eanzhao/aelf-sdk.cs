@@ -11,7 +11,7 @@ public class Int16Type : PrimitiveType<short>
     public static explicit operator Int16Type(short v) => new(v);
 
     public static implicit operator short(Int16Type v) => v.Value;
-    public static implicit operator ByteString(Int16Type v) => From(v.Value);
+    public static implicit operator ByteString(Int16Type v) => GetByteStringFrom(v.Value);
 
     public Int16Type()
     {
@@ -46,7 +46,7 @@ public class Int16Type : PrimitiveType<short>
         Value = value;
     }
 
-    public static ByteString From(short value)
+    public static ByteString GetByteStringFrom(short value)
     {
         return ByteString.CopyFrom(GetBytesFrom(value));
     }
@@ -56,5 +56,12 @@ public class Int16Type : PrimitiveType<short>
         var bytes = new byte[2];
         BitConverter.GetBytes(value).CopyTo(bytes, 0);
         return bytes;
+    }
+
+    public static Int64Type From(short value)
+    {
+        var instance = new Int64Type();
+        instance.Create(value);
+        return instance;
     }
 }
