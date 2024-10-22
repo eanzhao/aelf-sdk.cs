@@ -1,5 +1,7 @@
 using AElf.Client.Core.Infrastructure;
 using AElf.Client.Core.Options;
+using AElf.Cryptography;
+using AElf.Cryptography.ECDSA;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -15,6 +17,7 @@ public interface IAElfAccountProvider
     void SetPrivateKey(byte[] privateKey, string? alias = null, string? address = null);
     void SetPrivateKey(string address, string password, string? alias = null);
     string GetDefaultPassword();
+    ECKeyPair GenerateNewKeyPair();
 }
 
 public class AElfAccountProvider : Dictionary<AElfAccountInfo, byte[]>, IAElfAccountProvider, ISingletonDependency
@@ -114,6 +117,12 @@ public class AElfAccountProvider : Dictionary<AElfAccountInfo, byte[]>, IAElfAcc
             Alias = alias,
             Address = address
         }, privateKey);
+    }
+    
+    public ECKeyPair GenerateNewKeyPair()
+    {
+        var keyPair = CryptoHelper.GenerateKeyPair();
+        return keyPair;
     }
 
     private string GetKeyFileFullPath(string address, string configuredKeyDirectory)
