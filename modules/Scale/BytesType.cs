@@ -23,6 +23,11 @@ public class BytesType : PrimitiveType<byte[]>
 
     public override void Create(byte[] value)
     {
+        if (value.Length is < 1 or > 32)
+        {
+            throw new NotSupportedException("Bytes is a fixed-length byte array of 1 to 32 bytes");
+        }
+
         TypeSize = value.Length;
         Bytes = value;
         Value = value;

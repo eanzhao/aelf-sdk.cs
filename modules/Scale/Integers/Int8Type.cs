@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AElf;
 using Google.Protobuf;
 
@@ -7,7 +8,7 @@ public class Int8Type : PrimitiveType<sbyte>
 {
     public override string TypeName => "int8";
 
-    public override int TypeSize => 1;
+    [JsonIgnore] public override int TypeSize => 1;
 
     public static explicit operator Int8Type(sbyte v) => new(v);
 

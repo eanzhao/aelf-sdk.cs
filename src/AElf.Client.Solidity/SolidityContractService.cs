@@ -1,5 +1,7 @@
+using System.Text.Json;
 using AElf.Client.Core;
 using AElf.Client.Core.Options;
+using AElf.Client.Genesis;
 using AElf.Runtime.WebAssembly;
 using AElf.Types;
 using Google.Protobuf;
@@ -36,62 +38,73 @@ public class SolidityContractService : ContractServiceBase, ISolidityContractSer
     {
         return await _clientService.EstimateGasFeeAsync(transaction);
     }
+    
 
-    public async Task<SendTransactionResult> SendAsync(string selector, ByteString? parameter = null,
-        Weight? gasLimit = null, long value = 0)
+    public async Task<SendTransactionResult> SendAsync(string methodName, SmartContractRegistration registration, ByteString? parameter = null,
+        int gasLimit = 0, long value = 0)
     {
         var clientAlias = _clientConfigOptions.ClientAlias;
-        if (gasLimit is { RefTime: 0, ProofSize: 0 })
+        if (gasLimit is 0)
         {
-            gasLimit = null;
+            gasLimit = int.MaxValue;
         }
 
         var input = new SolidityTransactionParameter
         {
             Parameter = parameter ?? ByteString.Empty,
             Value = value,
-            GasLimit = gasLimit ?? new Weight { ProofSize = long.MaxValue, RefTime = long.MaxValue }
-        };
-        var tx = await PerformSendTransactionAsync(selector, input, clientAlias);
+            GasLimit = gasLimit
+        };;
+        var tx = await PerformSendSolidityTransactionAsync(methodName, registration ,clientAlias, input);
+        
+        
         return new SendTransactionResult
         {
             Transaction = tx,
             TransactionResult = await PerformGetTransactionResultAsync(tx.GetHash().ToHex(), clientAlias)
         };
     }
-    
-    public async Task<string> SendWithoutResultAsync(string selector, ByteString? parameter = null,
-        Weight? gasLimit = null, long value = 0)
+
+    public async Task<TransactionResult> CheckResult(string txId)
     {
         var clientAlias = _clientConfigOptions.ClientAlias;
-        if (gasLimit is { RefTime: 0, ProofSize: 0 })
+        return await PerformGetTransactionResultAsync(txId, clientAlias);
+    }
+
+    public async Task<string> SendWithoutResultAsync(string methodName, SmartContractRegistration registration, ByteString? parameter = null,
+       int gasLimit = 0, long value = 0)
+    {
+        var clientAlias = _clientConfigOptions.ClientAlias;
+        if (gasLimit is 0)
         {
-            gasLimit = null;
+            gasLimit = int.MaxValue;
         }
         
         var input = new SolidityTransactionParameter
         {
             Parameter = parameter ?? ByteString.Empty,
             Value = value,
-            GasLimit = gasLimit ?? new Weight { ProofSize = long.MaxValue, RefTime = long.MaxValue }
+            GasLimit = gasLimit
         };
-        var tx = await PerformSendTransactionAsync(selector, input, clientAlias);
+        var tx = await PerformSendSolidityTransactionAsync(methodName, registration ,clientAlias, input);
         return tx.GetHash().ToHex();
     }
     
     public async Task<string> GenerateRawTransaction(string selector, ByteString? parameter = null, string from = null,
-        Weight? gasLimit = null, long value = 0)
+       int gasLimit = 0, long value = 0)
     {
         var clientAlias = _clientConfigOptions.ClientAlias;
-        if (gasLimit is { RefTime: 0, ProofSize: 0 })
+
+        if (gasLimit is 0)
         {
-            gasLimit = null;
+            gasLimit = int.MaxValue;
         }
+
         var input = new SolidityTransactionParameter
         {
             Parameter = parameter ?? ByteString.Empty,
             Value = value,
-            GasLimit = gasLimit ?? new Weight { ProofSize = long.MaxValue, RefTime = long.MaxValue }
+            GasLimit = gasLimit 
         };
         var tx = await GenerateRawTransaction(selector, input, clientAlias, from);
         return tx;
@@ -103,17 +116,24 @@ public class SolidityContractService : ContractServiceBase, ISolidityContractSer
         var txIdList = await PerformSendTransactionsAsync(clientAlias, rawTransactions);
         return txIdList;
     }
-
-    public async Task<byte[]> CallAsync(string selector, ByteString parameter)
+    
+    public async Task<byte[]> CallAsync(string methodName, SmartContractRegistration registration, ByteString? parameter = null,
+        int gasLimit = 0, long value = 0)
     {
         var clientAlias = _clientConfigOptions.ClientAlias;
+        if (gasLimit is 0)
+        {
+            gasLimit = int.MaxValue;
+        }
         var input = new SolidityTransactionParameter
         {
-            Parameter = parameter,
+            Parameter = parameter ?? ByteString.Empty,
+            Value = value,
+            GasLimit = gasLimit
         };
-        var result = await _clientService.ViewAsync(_contractAddress.ToBase58(), selector, input, clientAlias);
+        var result = await PerformCallSolidityTransactionAsync(methodName, registration, clientAlias, input);
         return result;
-    }
+    } 
 
     public async Task<SendTransactionResult> EstimateFeeAsync(string selector, ByteString? parameter = null)
     {

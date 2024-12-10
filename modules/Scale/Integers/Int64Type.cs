@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AElf;
 using Google.Protobuf;
 
@@ -7,7 +8,7 @@ public class Int64Type : PrimitiveType<long>
 {
     public override string TypeName => "int64";
 
-    public override int TypeSize => 8;
+    [JsonIgnore] public override int TypeSize => 8;
 
     public static explicit operator Int64Type(long v) => new(v);
 

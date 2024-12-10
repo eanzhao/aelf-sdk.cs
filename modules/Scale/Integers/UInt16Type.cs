@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AElf;
 using Google.Protobuf;
 
@@ -7,7 +8,7 @@ public class UInt16Type : PrimitiveType<ushort>
 {
     public override string TypeName => "uint16";
 
-    public override int TypeSize => 2;
+    [JsonIgnore] public override int TypeSize => 2;
 
     public static explicit operator UInt16Type(ushort v) => new(v);
 

@@ -11,7 +11,6 @@ using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Solang;
 using Volo.Abp.DependencyInjection;
 
 namespace AElf.Client.Genesis;

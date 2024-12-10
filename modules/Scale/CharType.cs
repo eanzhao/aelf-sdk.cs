@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Google.Protobuf;
 
 namespace Scale;
@@ -7,7 +8,7 @@ public class CharType : PrimitiveType<char>
 {
     public override string TypeName => "char";
 
-    public override int TypeSize => 1;
+    [JsonIgnore] public override int TypeSize => 1;
 
     public static explicit operator CharType(char p) => new(p);
     public static implicit operator char(CharType p) => p.Value;

@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Text.Json.Serialization;
 using AElf;
 using Google.Protobuf;
 
@@ -8,7 +9,7 @@ public class Int256Type : PrimitiveType<BigInteger>
 {
     public override string TypeName => "int256";
 
-    public override int TypeSize => 32;
+    [JsonIgnore] public override int TypeSize => 32;
 
     public static explicit operator Int256Type(BigInteger v) => new(v);
 

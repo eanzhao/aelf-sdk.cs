@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Google.Protobuf;
 
 namespace Scale;
@@ -5,7 +6,7 @@ namespace Scale;
 public abstract class PrimitiveType<T> : BaseType
 {
     public T Value { get; set; }
-    public ByteString ByteStringValue => ByteString.CopyFrom(Bytes);
+    [JsonIgnore] public ByteString ByteStringValue => ByteString.CopyFrom(Bytes);
 
     public abstract void Create(T value);
 

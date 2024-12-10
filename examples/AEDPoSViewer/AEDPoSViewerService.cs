@@ -1,5 +1,4 @@
 using AElf;
-using AElf.Client;
 using AElf.Client.Core;
 using AElf.Contracts.Consensus.AEDPoS;
 using AElf.Standards.ACS4;

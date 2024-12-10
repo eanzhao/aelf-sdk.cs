@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using Nethereum.ABI;
 using Scale.Encoders;
 using Solang;
+using Solang.Extensions;
 using Volo.Abp.DependencyInjection;
 
 namespace BatchScript;
@@ -75,9 +76,9 @@ public class SolidityService : ISingletonDependency, ISolidityService
         var elf = ByteArrayHelper.HexStringToByteArray("0x0c454c46");
         var elfToken = ByteArrayHelper.HexStringToByteArray("0x24456c6620746f6b656e");
 
-        var txResult = await _solidity.SendAsync(selector, ByteString.CopyFrom(elfToken.Concat(elf).ToArray()));
-        Logger.LogInformation("Initialize TransactionId: {0}, Status: {1}",
-            txResult.TransactionResult.TransactionId.ToHex(), txResult.TransactionResult.Status);
+        // var txResult = await _solidity.SendAsync(selector, ByteString.CopyFrom(elfToken.Concat(elf).ToArray()));
+        // Logger.LogInformation("Initialize TransactionId: {0}, Status: {1}",
+        //     txResult.TransactionResult.TransactionId.ToHex(), txResult.TransactionResult.Status);
     }
 
     public async Task Mint()
@@ -92,9 +93,9 @@ public class SolidityService : ISingletonDependency, ISolidityService
             Address.FromBase58(account).ToWebAssemblyAddress(),
             testAmount.ToWebAssemblyUInt256()));
 
-        var mintResult = await _solidity.SendAsync(selector, combinedData);
-        Logger.LogInformation("Mint TransactionId: {0}, Status: {1}",
-            mintResult.TransactionResult.TransactionId.ToHex(), mintResult.TransactionResult.Status);
+        // var mintResult = await _solidity.SendAsync(selector, combinedData);
+        // Logger.LogInformation("Mint TransactionId: {0}, Status: {1}",
+        //     mintResult.TransactionResult.TransactionId.ToHex(), mintResult.TransactionResult.Status);
 
         var transferSelector = _solangAbi.GetSelector("transfer");
         var accountList = _testContractOptions.FromAccountList;
@@ -108,9 +109,9 @@ public class SolidityService : ISingletonDependency, ISolidityService
                 Address.FromBase58(from).ToWebAssemblyAddress(),
                 amount.ToWebAssemblyUInt256()));
 
-            var tx = await _solidity.SendAsync(transferSelector, combinedData2);
-            Logger.LogInformation("Transfer TransactionId: {0}, Status: {1}",
-                tx.TransactionResult.TransactionId.ToHex(), tx.TransactionResult.Status);
+            // var tx = await _solidity.SendAsync(transferSelector, combinedData2);
+            // Logger.LogInformation("Transfer TransactionId: {0}, Status: {1}",
+            //     tx.TransactionResult.TransactionId.ToHex(), tx.TransactionResult.Status);
         }
     }
 
@@ -130,8 +131,7 @@ public class SolidityService : ISingletonDependency, ISolidityService
                 var combinedData = From(dataPart1, dataPart2);
 
                 var requestInfo =
-                    await _solidity.GenerateRawTransaction(selector, combinedData, account,
-                        new Weight { ProofSize = 1000 });
+                    await _solidity.GenerateRawTransaction(selector, combinedData, account);
                 rawTransactionList.Add(requestInfo);
             }
         }

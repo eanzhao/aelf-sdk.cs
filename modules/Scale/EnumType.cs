@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AElf;
 using Google.Protobuf;
 
@@ -7,7 +8,7 @@ public class EnumType<T> : PrimitiveType<T> where T : Enum
 {
     public override string TypeName => typeof(T).Name;
 
-    public override int TypeSize => 1;
+    [JsonIgnore] public override int TypeSize => 1;
 
     public static explicit operator EnumType<T>(T p) => new(p);
 
@@ -25,14 +26,6 @@ public class EnumType<T> : PrimitiveType<T> where T : Enum
     public override byte[] Encode()
     {
         return Bytes;
-    }
-
-    public override void Decode(byte[] byteArray, ref int p)
-    {
-        var memory = byteArray.AsMemory();
-        var result = memory.Span.Slice(p, TypeSize).ToArray();
-        p += TypeSize;
-        Create(result);
     }
 
     public override void Create(string value)
@@ -62,10 +55,17 @@ public class EnumType<T> : PrimitiveType<T> where T : Enum
         return [Convert.ToByte(value)];
     }
 
-    public static T From(T value)
+    public static EnumType<T> From(T value)
     {
         var instance = new EnumType<T>();
         instance.Create(value);
-        return instance.Value;
+        return instance;
+    }
+
+    public static EnumType<T> From(byte[] value)
+    {
+        var instance = new EnumType<T>();
+        instance.Create(value);
+        return instance;
     }
 }

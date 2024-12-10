@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AElf;
 using Google.Protobuf;
 
@@ -7,7 +8,7 @@ public class BoolType : PrimitiveType<bool>
 {
     public override string TypeName => "bool";
 
-    public override int TypeSize => 1;
+    [JsonIgnore] public override int TypeSize => 1;
 
     public BoolType()
     {

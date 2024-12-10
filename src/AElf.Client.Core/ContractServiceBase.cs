@@ -1,6 +1,10 @@
+using System.Text.Json;
+using AElf.Runtime.WebAssembly;
 using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Solang;
+using Solang.Extensions;
 using Volo.Abp.Threading;
 
 namespace AElf.Client.Core;
@@ -17,7 +21,6 @@ public class ContractServiceBase
     {
         _clientService = clientService;
         SmartContractName = smartContractName;
-        
         Logger= NullLogger<ContractServiceBase>.Instance;
     }
 
@@ -51,6 +54,28 @@ public class ContractServiceBase
 
         return await _clientService.SendSystemAsync(smartContractName, methodName, parameter, useClientAlias);
     }
+    
+    protected async Task<Transaction> PerformSendSolidityTransactionAsync(string methodName, SmartContractRegistration registration,
+        string useClientAlias,  IMessage parameter)
+    {
+        var wasmCode = new WasmContractCode();
+        wasmCode.MergeFrom(registration.Code);
+        var solangAbi = JsonSerializer.Deserialize<SolangABI>(wasmCode.Abi);
+        var selector = methodName == "deploy" ? solangAbi.GetConstructor() : solangAbi.GetSelector(methodName);
+        return await _clientService.SendAsync(ContractAddress.ToBase58(), selector, parameter, useClientAlias);
+    }
+    
+    
+    protected async Task<byte[]> PerformCallSolidityTransactionAsync(string methodName, SmartContractRegistration registration,
+        string useClientAlias,  IMessage parameter)
+    {
+        var wasmCode = new WasmContractCode();
+        wasmCode.MergeFrom(registration.Code);
+        var solangAbi = JsonSerializer.Deserialize<SolangABI>(wasmCode.Abi);
+        var selector = methodName == "deploy" ? solangAbi.GetConstructor() : solangAbi.GetSelector(methodName);
+        return await _clientService.ViewAsync(ContractAddress.ToBase58(), selector, parameter, useClientAlias);
+    }
+
     
     protected async Task<string> GenerateRawTransaction(string methodName, IMessage parameter,
         string useClientAlias, string? from = null)

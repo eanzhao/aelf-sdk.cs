@@ -2,97 +2,138 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using AElf.Client.Core;
+using AElf.Client.Core.Options;
 using AElf.Client.Genesis;
 using AElf.Client.Solidity;
 using AElf.Types;
 using Scale;
 using Scale.Decoders;
 using Shouldly;
-using Solang;
 using Xunit.Abstractions;
-using AElf.Client.Test.contract;
 using AElf.Client.Token;
 using AElf.Contracts.MultiToken;
+using AElf.SolidityContract;
+using Google.Protobuf;
+using Microsoft.Extensions.Options;
+using Solang;
 
 namespace AElf.Client.Test.Solidity;
 
 public class DelegateCallTest : AElfClientAbpContractServiceTestBase
 {
     private readonly ITestOutputHelper _testOutputHelper;
-    private readonly string TestAddress = "2r896yKhHsoNGhyJVe4ptA169P6LMvsC94BxA7xtrifSHuSdyd";
 
+    private readonly IAElfClientService _aelfClientService;
+    private readonly AElfClientConfigOptions _aelfClientConfigOptions;
     private readonly IDeployContractService _deployService;
+    private readonly IGenesisService _genesisService;
     private readonly ITokenService _tokenService;
+    
     private ISolidityContractService _solidityContractService;
+
     private SolangABI _solangAbi;
+    private IAElfAccountProvider _accountProvider;
+    
 
-    private IDelegateeStub _delegateeStub;
-    private IDelegatorStub _delegatorStub;
-    private IdestructStub _destructStub;
-
+    private string delegateeContract = "2hqsqJndRAZGzk96fsEvyuVBTAvoBjcuwTjkuyJffBPueJFrLa";
+    private string delegatorContract = "GwsSp1MZPmkMvXdbfSCDydHhZtDpvqkFpmPvStYho288fb7QZ";
+    private string destructContract = "SsSqZWLf7Dk9NWyWyvDwuuY5nzn5n99jiscKZgRPaajZP5p8y";
 
     public DelegateCallTest(ITestOutputHelper testOutputHelper)
     {
         _testOutputHelper = testOutputHelper;
+        _aelfClientService = GetRequiredService<IAElfClientService>();
+        _aelfClientConfigOptions = GetRequiredService<IOptionsSnapshot<AElfClientConfigOptions>>().Value;
+        _accountProvider = GetRequiredService<IAElfAccountProvider>();
+        _genesisService = GetRequiredService<IGenesisService>();
         _tokenService = GetRequiredService<ITokenService>();
-        _delegateeStub = GetRequiredService<IDelegateeStub>();
-        _delegatorStub = GetRequiredService<IDelegatorStub>();
-        _destructStub = GetRequiredService<IdestructStub>();
+        _deployService = GetRequiredService<IDeployContractService>();
     }
+    
+    [Theory]
+    [InlineData("contracts/Delegatee.contract")]
+    [InlineData("contracts/Delegator.contract")]
+    [InlineData("contracts/destruct.contract")]
+    public async Task<Address> DeployContractTest(string path)
+    {
+        var (wasmCode, solangAbi) = await LoadWasmContractCodeAsync(path);
+        _solangAbi = solangAbi;
+        var input = new DeploySoliditySmartContractInput
+        {
+            Category = 1,
+            Code = wasmCode.ToByteString(),
+            Parameter = ByteString.Empty
+        };
+        var contractAddress = await _deployService.DeploySolidityContract(input);
+        contractAddress.Value.ShouldNotBeEmpty();
+        _testOutputHelper.WriteLine(contractAddress.ToBase58());
+        var contractInfo = await _genesisService.GetContractInfo(contractAddress);
+        contractInfo.Category.ShouldBe(1);
+        contractInfo.IsSystemContract.ShouldBeFalse();
+        contractInfo.Version.ShouldBe(1);
+        _testOutputHelper.WriteLine(contractInfo.ContractVersion);
+
+        return contractAddress;
+    }
+    
 
     [Fact]
     public async Task DelegateCallFeatureTest()
     {
-        var delegateeAddress = await _delegateeStub.DeployAsync();
-        _testOutputHelper.WriteLine($"delegatee contract address: {delegateeAddress.ToBase58()}");
-        var delegatorAddress = await _delegatorStub.DeployAsync();
-        _testOutputHelper.WriteLine($"delegator contract address: {delegatorAddress.ToBase58()}");
-        
-        var value = new BigIntValue(1000000);
-        var arg = new BigIntValue(123456789);
-        
-        var result = await _delegatorStub.SetVarsAsync(
-            TupleType.GetByteStringFrom(AddressType.GetByteStringFrom(delegateeAddress), 
-                UIntType.GetByteStringFrom(arg)));
-        result.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+        const long vars = 1616;
+        const long transferValue = 100;
+        _solidityContractService =
+            new SolidityContractService(_aelfClientService, Address.FromBase58(delegatorContract), _aelfClientConfigOptions);
+        var registration =
+            await _genesisService.GetSmartContractRegistrationByAddress(Address.FromBase58(delegatorContract));
 
+        {
+            var txResult= await _solidityContractService.SendAsync("setVars", registration,
+                TupleType<AddressType, UInt256Type>.GetByteStringFrom(
+                    AddressType.From(Address.FromBase58(delegateeContract).ToByteArray()),
+                    UInt256Type.From(vars)
+                ), 0, transferValue);
+            _testOutputHelper.WriteLine(txResult.TransactionResult.TransactionId.ToHex());
+            txResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+        }
 
-        var num = await _delegateeStub.NumAsync();
-        new IntegerTypeDecoder().Decode(num).ShouldBe(new BigInteger(0));
-        
-        var balance = await _delegateeStub.ValueAsync();
-        new IntegerTypeDecoder().Decode(balance).ShouldBe(new BigInteger(0));
-        
-        var sender = await _delegateeStub.SenderAsync();
-        // Address.FromBytes(sender).ShouldBe(Address.FromBase58(TestAddress));
+        // Checks
+        {
+            var txResult = await _solidityContractService.SendAsync("num", registration);
+            _testOutputHelper.WriteLine(txResult.TransactionResult.TransactionId.ToHex());
+            txResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+            txResult.TransactionResult.ReturnValue.ToByteArray().ToInt64(false).ShouldBe(vars);        
+        }
 
-        // Storage of the delegator must have changed
-        num = await _delegatorStub.NumAsync();
-        // new IntegerTypeDecoder().Decode(num).ShouldBe(arg);
-
-        balance = await _delegatorStub.ValueAsync();
-        // new IntegerTypeDecoder().Decode(balance).ShouldBe(value);
-        sender = await _delegateeStub.SenderAsync();
-        Address.FromBytes(sender).ShouldBe(Address.FromBase58(TestAddress));
+        {
+            var txResult = await _solidityContractService.SendAsync("value", registration);
+            _testOutputHelper.WriteLine(txResult.TransactionResult.TransactionId.ToHex());
+            txResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+            txResult.TransactionResult.ReturnValue.ToByteArray().ToInt64(false).ShouldBe(transferValue);
+        }
     }
     
     [Fact]
     public async Task DestructFeatureTest()
     {
-        var address = await _destructStub.DeployAsync();
-        _testOutputHelper.WriteLine($"destruct contract address: {address.ToBase58()}");
-        var value = await _destructStub.HelloAsync();
-        Encoding.UTF8.GetString(value).ShouldBe("Hello"); // 为啥会有个空格？
+        _solidityContractService =
+            new SolidityContractService(_aelfClientService, Address.FromBase58(destructContract), _aelfClientConfigOptions);
+        var registration =
+            await _genesisService.GetSmartContractRegistrationByAddress(Address.FromBase58(destructContract));
+
+        var value = await _solidityContractService.CallAsync("hello", registration);
+        Encoding.UTF8.GetString(value).ShouldBe("\u0014Hello"); // 为啥会有个空格？
 
         await _tokenService.TransferAsync(new TransferInput
         {
             Amount = 100000000,
             Symbol = "ELF",
-            To = Address.FromBase58(address.ToBase58())
+            To = Address.FromBase58(destructContract)
         });
 
-        var result = await _destructStub.SelfterminateAsync(AddressType.GetByteStringFromBase58(TestAddress));
-        _testOutputHelper.WriteLine($"Set tx: {result.TransactionResult.TransactionId}");
+        var result = await _solidityContractService.SendAsync("selfterminate", registration,
+            AddressType.GetByteStringFromBase58(destructContract));
+        _testOutputHelper.WriteLine($"selfterminate tx: {result.TransactionResult.TransactionId}");
         result.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
     }
 }

@@ -18,7 +18,14 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\modules\Solang.Net\Solang.Net.csproj" />
         <ProjectReference Include="..\AElf.Client\AElf.Client.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="AElf.Client.Genesis">
+        <HintPath>..\..\test\AElf.Client.Test\bin\Debug\net8.0\AElf.Client.Genesis.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

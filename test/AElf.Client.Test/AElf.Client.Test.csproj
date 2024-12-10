@@ -39,10 +39,6 @@
         <ProjectReference Include="..\AElf.Client.TestBase\AElf.Client.TestBase.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\AElf.Client.Test.SourceGenerator\AElf.Client.Test.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    </ItemGroup>
-
     <PropertyGroup>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)\SolidityContractStubs</CompilerGeneratedFilesOutputPath>

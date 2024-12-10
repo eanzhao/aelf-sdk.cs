@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AElf;
 using Google.Protobuf;
 
@@ -7,7 +8,7 @@ public class UInt64Type : PrimitiveType<ulong>
 {
     public override string TypeName => "uint64";
 
-    public override int TypeSize => 8;
+    [JsonIgnore] public override int TypeSize => 8;
 
     public static explicit operator UInt64Type(ulong v) => new(v);
 

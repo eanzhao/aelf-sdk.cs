@@ -8,15 +8,16 @@ namespace AElf.Client.Solidity;
 public interface ISolidityContractService
 {
     Task<long> EstimateGasFeeAsync(Transaction transaction);
-
-    Task<SendTransactionResult> SendAsync(string selector, ByteString? parameter = null,
-        Weight? gasLimit = null, long value = 0);
-    Task<string> SendWithoutResultAsync(string selector, ByteString? parameter = null,
-        Weight? gasLimit = null, long value = 0);
+    Task<SendTransactionResult> SendAsync(string selector,SmartContractRegistration registration, ByteString? parameter = null,
+        int gasLimit = 0, long value = 0);
+    Task<TransactionResult> CheckResult(string txId);
+    Task<string> SendWithoutResultAsync(string methodName, SmartContractRegistration registration, ByteString? parameter = null,
+        int gasLimit = 0, long value = 0);
     Task<string> GenerateRawTransaction(string selector, ByteString? parameter = null, string from = null,
-        Weight? gasLimit = null, long value = 0);
+        int gasLimit = 0, long value = 0);
     Task<List<string>?> SendMultiTransactions(List<string> rawTransactions);
-    Task<byte[]> CallAsync(string selector, ByteString parameter);
+    Task<byte[]> CallAsync(string methodName, SmartContractRegistration registration, ByteString? parameter = null,
+    int gasLimit = 0, long value = 0);
 
     Task<SendTransactionResult> EstimateFeeAsync(string selector, ByteString? parameter = null);
 }

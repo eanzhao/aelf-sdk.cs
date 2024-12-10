@@ -3,12 +3,12 @@ using Google.Protobuf;
 
 namespace Scale;
 
-public class StringType : PrimitiveType<string>
+public class StringType : VecType<UInt8Type>
 {
     public override string TypeName => "string";
 
     public static explicit operator StringType(string p) => new(p);
-    public static implicit operator string(StringType p) => p.Value;
+    public static implicit operator string(StringType p) => Encoding.UTF8.GetString(p.Encode());
 
     public StringType()
     {
@@ -24,32 +24,9 @@ public class StringType : PrimitiveType<string>
         return GetBytesFrom(Value);
     }
 
-    public override void Decode(byte[] byteArray, ref int p)
-    {
-        var start = p;
-
-        var value = String.Empty;
-
-        var length = CompactIntegerType.Decode(byteArray, ref p);
-        for (var i = 0; i < length; i++)
-        {
-            var t = new CharType();
-            t.Decode(byteArray, ref p);
-            value += t.Value;
-        }
-
-        TypeSize = p - start;
-
-        var bytes = new byte[TypeSize];
-        Array.Copy(byteArray, start, bytes, 0, TypeSize);
-
-        Bytes = bytes;
-        Value = value;
-    }
-
     public override void Create(string value)
     {
-        Value = value;
+        Value = Encoding.UTF8.GetBytes(value).Select(b => new UInt8Type(b)).ToArray();
         Bytes = GetBytesFrom(value);
         TypeSize = Bytes.Length;
     }
@@ -68,10 +45,22 @@ public class StringType : PrimitiveType<string>
         return result.ToArray();
     }
 
+    public static StringType From(byte[] value)
+    {
+        var instance = new StringType();
+        instance.Create(value);
+        return instance;
+    }
+
     public static StringType From(string value)
     {
         var instance = new StringType();
         instance.Create(value);
         return instance;
+    }
+
+    public override string ToString()
+    {
+        return Encoding.UTF8.GetString(Value.Select(v => v.Value).ToArray());
     }
 }

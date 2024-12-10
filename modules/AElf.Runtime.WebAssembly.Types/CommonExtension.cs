@@ -15,14 +15,4 @@ public static class CommonExtension
     {
         return new ABIValue("bytes32", bytes);
     }
-
-    public static byte[] RightPad(this byte[] bytes, int length)
-    {
-        if (length <= bytes.Length)
-            return bytes;
-
-        var paddedBytes = new byte[length];
-        Buffer.BlockCopy(bytes, 0, paddedBytes, 0, bytes.Length);
-        return paddedBytes;
-    }
 }

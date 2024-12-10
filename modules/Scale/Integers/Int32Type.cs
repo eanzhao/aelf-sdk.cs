@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AElf;
 using Google.Protobuf;
 
@@ -7,7 +8,7 @@ public class Int32Type : PrimitiveType<int>
 {
     public override string TypeName => "int32";
 
-    public override int TypeSize => 4;
+    [JsonIgnore] public override int TypeSize => 4;
 
     public static explicit operator Int32Type(int v) => new(v);
 
